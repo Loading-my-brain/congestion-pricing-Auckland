@@ -1,0 +1,105 @@
+---
+title: "SA2-clean-part2"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+
+# The Order in Which Variables I have worked through:
+
+1.  Travelling goups in the mode_of_transport.R in the Data exploration folder
+2.  Home Ownership
+3.  
+
+# My Aims
+
+The below list summarizes your research workflow and technical objectives.
+
+###**Research Objectives & Task List**
+
+#### **Phase 1: Initial Data Preparation & Cleaning**
+
+-   [x] **Load and link raw data:** Import 2023 Census shapefiles and associate them with the metadata lookup table.
+-   [x] **Filter for relevance:** Isolate the "Main means of travel to work" variables and focus exclusively on 2023 data.
+-   [x] **Standardize naming:** Automatically generate descriptive, machine-readable column names (snake_case) using `janitor` to replace cryptic census codes.
+-   [x] **Subset variables:** Drop unnecessary columns from 2013 and 2018 to optimize processing speed and memory.
+
+#### **Phase 2: Spatial Refinement (Auckland Focus)**
+
+-   [x] **Define study area:** Load the Auckland Territorial Authority (TA) boundary.
+-   [x] **Geographic clipping:** Perform a physical clip (`st_intersection`) to remove all national data outside the Auckland region.
+-   [x] **Geometry repair:** Validate and repair spatial boundaries (fixing self-intersections and removing non-polygon artifacts) to ensure compatibility with mapping tools like `terra`.
+
+#### **Phase 3: Data Integrity & Quality Control**
+
+-   [x] **Handle sentinel values:** Identify and replace negative census codes (e.g., -999, -997) with `NA` to prevent skewed statistical results.
+-   [x] **Isolate the "Home-to-Work" group:** Filter out education-related travel and workplace-destination data to focus strictly on resident commuting patterns.
+
+#### **Phase 4: Travel Mode Feature Engineering**
+
+-   [x] **Standardize transport prefixes:** Rename columns with a `transportMode_` prefix for easier bulk manipulation.
+-   [x] **Create proportion variables:** Calculate the percentage of commuters for every mode by dividing counts by the `total_stated` population per neighborhood.
+-   [x] **Develop aggregate categories:** Group individual modes into high-level analytical categories:
+    -   **Private Vehicle:** (Private Car + Company Car + Passenger)
+    -   **Public Transport:** (Bus + Train + Ferry)
+    -   **Active Modes:** (Walking + Cycling)
+    -   **Work at Home**
+
+#### **Phase 5: Visual Exploratory Data Analysis (EDA)**
+
+-   [x] **Analyze distributions:** Create histograms with density curves, means, and medians to understand the spread of specific travel modes (e.g., Working from Home).
+-   [x] **Identify outliers:** Use boxplots and the Interquartile Range (IQR) method to find "extreme" neighborhoods.
+-   [x] **Investigate anomalies:** Extract and list specific neighborhood names (e.g., Top 5 / Bottom 5) that deviate significantly from the regional average.
+-   [x] **Map the proportions:** Generate thematic (choropleth) maps using `tmap` to visualize the spatial distribution of commuting habits across Auckland.
+
+#### **Phase 6: Regional Synthesis & Comparison**
+
+-   [x] **Summarize regional shares:** Calculate the average share of each transport mode across all 627 Auckland neighborhoods.
+-   [x] **Quantify uncertainty:** Calculate Standard Error and a 95% Margin of Error (MoE) for regional averages.
+-   [x] **Compare Public vs. Private:** Produce high-quality bar charts comparing the aggregate Private Vehicle share vs. Public Transport share to highlight the dominant regional transport trends.
+
+# The Analysis
+
+```{r}
+# Library Package
+library(sp)
+library(sf)
+library(GWmodel)
+library(dplyr) 
+library(tidyverse)
+library(tmap)
+library(RColorBrewer)
+library(grid)
+library(gridExtra)
+library(terra)
+library(janitor)
+library(stringr)
+```
+
+# GOALS:
+
+Once, I have anlysed every variable. I want to do PCA to see which variable is closely related to each other.
+
+# Mode of Transport Variable Analysis ..... Part 2
+
+NEXT PLANS ------------
+
+-   [ ] Is there a signficant differece between the 5 mode shares; PC, WFM, PT, Active modes and other? Perhaps we can use the anova table to make the comparison yea?
+-   [ ] I want to create a chloropeth map;
+    -   [ ] Identify top 5 SA2 neighbourhood with high and low PC\
+    -   [ ] top 5 SA2 neighbourhood with high and low PT
+
+#### Is there a signficant differece between the 5 mode shares; PC, WFM, PT, Active modes and other? Perhaps we can use the anova table to make the comparison yea?
+
+
+
+Yes
+
+
+
+#### Density Summary Interpreations:
+
+If you look at the proportions, private car shares are remarkably consistent across the region (the middle 50% of neighborhoods range tightly between 61 % 61% and 73 % 73% car use). However, if you look at the densities, the physical concentration of cars ranges wildly from 0.27 0.27 to 5 , 164 vehicles/km 2 5,164 vehicles/km 2 . This demonstrates that mode share percentages do not predict traffic congestion [1.1.1]. Suburban neighborhoods might have high percentages of car dependency, but because their land area is vast, they put very few physical cars on the road per square kilometer. The physical bottleneck and congestion are purely urban density problems
+
+
+This table measures the physical volume of commuters per square kilometer ( people/km 2 people/km 2 ) of land area, which acts as a direct proxy for congestion and spatial pressure on the city's infrastructure [1.1.2]. Extreme Spatial Range of Private Cars: Private car density ranges from virtually 0 0 ( 0.27 0.27 vehicles/ km 2 km 2 ) in sparse rural areas to a massive peak of 5 , 164 5,164 vehicles/ km 2 km 2 in dense urban pockets. This shows where the physical pressure on Auckland's road network is concentrated. Highly Skewed Public Transport Corridors: The median density of public transport is just 93.9 93.9 passengers/ km 2 km 2 , but the maximum is a huge 5 , 116 5,116 passengers/ km 2 km 2 . This indicates that public transit volume is extremely concentrated in a few high-density rapid transit corridors (such as the CBD and busway/train lines), while the vast majority of suburban Auckland sees very little actual transit passenger density. The "Active Mode" Concentration Phenomenon: Active modes (walking/cycling) have the highest maximum density of any mode in Auckland, peaking at 10 , 754 10,754 active commuters/ km 2 km 2 . This indicates that in highly walkable urban nodes (such as the CBD, universities, and inner-city suburbs), walking and cycling achieve an extraordinary level of spatial efficiency, packing over 10,000 travelers per square kilometer onto the land without requiring vehicle space or parkin

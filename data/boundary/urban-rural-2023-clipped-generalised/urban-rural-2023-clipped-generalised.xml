@@ -1,0 +1,307 @@
+<gmd:MD_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.isotc211.org/2005/gmd">
+  <gmd:language>
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeSpace="ISO639-2" codeListValue="eng">eng</gmd:LanguageCode>
+  </gmd:language>
+  <gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeSpace="ISOTC211/19115" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
+  </gmd:characterSet>
+  <gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeSpace="ISOTC211/19115" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+  </gmd:hierarchyLevel>
+  <gmd:hierarchyLevelName>
+    <gco:CharacterString>dataset</gco:CharacterString>
+  </gmd:hierarchyLevelName>
+  <gmd:contact>
+    <gmd:CI_ResponsibleParty>
+      <gmd:individualName>
+        <gco:CharacterString>Geospatial Team</gco:CharacterString>
+      </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>Stats NZ</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:phone>
+            <gmd:CI_Telephone>
+              <gmd:voice>
+                <gco:CharacterString>0508 525 525</gco:CharacterString>
+              </gmd:voice>
+            </gmd:CI_Telephone>
+          </gmd:phone>
+          <gmd:address>
+            <gmd:CI_Address>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>geography@stats.govt.nz</gco:CharacterString>
+              </gmd:electronicMailAddress>
+            </gmd:CI_Address>
+          </gmd:address>
+          <gmd:onlineResource>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://datafinder.stats.govt.nz/</gmd:URL>
+              </gmd:linkage>
+            </gmd:CI_OnlineResource>
+          </gmd:onlineResource>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeSpace="ISOTC211/19115" codeListValue="owner">owner</gmd:CI_RoleCode>
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+    <gco:Date>2022-12-01</gco:Date>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName>
+    <gco:CharacterString>ISO 19139 Geographic Information - Metadata - Implementation Specification</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>2007</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <gmd:spatialRepresentationInfo>
+    <gmd:MD_VectorSpatialRepresentation>
+      <gmd:topologyLevel>
+        <gmd:MD_TopologyLevelCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_TopologyLevelCode" codeSpace="ISOTC211/19115" codeListValue="geometryOnly">geometryOnly</gmd:MD_TopologyLevelCode>
+      </gmd:topologyLevel>
+      <gmd:geometricObjects>
+        <gmd:MD_GeometricObjects>
+          <gmd:geometricObjectType>
+            <gmd:MD_GeometricObjectTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeSpace="ISOTC211/19115" codeListValue="composite">composite</gmd:MD_GeometricObjectTypeCode>
+          </gmd:geometricObjectType>
+          <gmd:geometricObjectCount>
+            <gco:Integer>689</gco:Integer>
+          </gmd:geometricObjectCount>
+        </gmd:MD_GeometricObjects>
+      </gmd:geometricObjects>
+    </gmd:MD_VectorSpatialRepresentation>
+  </gmd:spatialRepresentationInfo>
+  <gmd:referenceSystemInfo>
+    <gmd:MD_ReferenceSystem>
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code>
+            <gco:CharacterString>2193</gco:CharacterString>
+          </gmd:code>
+          <gmd:codeSpace>
+            <gco:CharacterString>EPSG</gco:CharacterString>
+          </gmd:codeSpace>
+          <gmd:version>
+            <gco:CharacterString>7.9.4(9.0.0)</gco:CharacterString>
+          </gmd:version>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>UR2023_V1_00_Clipped</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2023-01-01</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeSpace="ISOTC211/19115" codeListValue="creation">creation</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2023-01-01</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeSpace="ISOTC211/19115" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:presentationForm>
+            <gmd:CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeSpace="ISOTC211/19115" codeListValue="mapDigital">mapDigital</gmd:CI_PresentationFormCode>
+          </gmd:presentationForm>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>This dataset is the definitive version of the annually released urban rural (UR) boundaries as at 1 January 2023 as defined by Stats NZ (the custodian), clipped to the coastline. This clipped version has been created for cartographic purposes and so does not fully represent the official full extent boundaries. This version contains 689 UR areas, including 195 urban areas and 402 rural settlements.UR 2023 is the first major update of the geography since it was first created in 2018. The update is to ensure UR geographies are relevant and meet criteria before each five-yearly population and dwelling census. UR 2023 contains 13 new rural settlements and 7 new small urban areas. Updates were made to reflect real world change including new subdivisions and motorways, and to improve delineation of urban areas and rural settlements. The Wānaka urban area, whose population has grown to be more than 10,000 based on population estimates, has been reclassified to a medium urban area in the 2023 urban rural indicator.In the 2023 classification there are:7 major urban areas13 large urban areas23 medium urban areas152 small urban areas402 rural settlements.This dataset is the definitive version of the annually released urban rural (UR) boundaries as at 1 January 2023 as defined by Stats NZ (the custodian), clipped to the coastline. This clipped version has been created for cartographic purposes and so does not fully represent the official full extent boundaries. This version contains 745 UR areas, including 195 urban areas and 402 rural settlements.Urban rural (UR) is an output geography that classifies New Zealand into areas that share common urban or rural characteristics and is used to disseminate a broad range of Stats NZ’s social, demographic and economic statistics. The UR separately identifies urban areas, rural settlements, other rural areas, and water areas. Urban areas and rural settlements are form-based geographies delineated by the inspection of aerial imagery, local government land designations on district plan maps, address registers, property title data, and any other available information. However, because the underlying meshblock pattern is used to define the geographies, boundaries may not align exactly with local government land designations or what can be seen in aerial images. Other rural areas, and bodies of water represent areas not included within an urban area. Urban areas are built from the statistical area 2 (SA2) geography, while rural and water areas are built from the statistical area 1 (SA1) geography. Urban areasUrban areas are statistically defined areas with no administrative or legal basis. They are characterised by high population density with many built environment features where people and buildings are located close together for residential, cultural, productive, trade and social purposes. Urban areas are delineated using the following criteria. They: form a contiguous cluster of one or more SA2s, contain an estimated resident population of more than 1,000 people and usually have a population density of more than 400 residents or 200 address points per square kilometre, have a high coverage of built physical structures and artificial landscapes such as: - residential dwellings and apartments, - commercial structures, such as factories, office complexes, and shopping centres, - transport and communication facilities, such as airports, ports and port facilities, railway stations, bus stations and similar transport hubs, and communications infrastructure,- medical, education, and community facilities,- tourist attractions and accommodation facilities, - waste disposal and sewerage facilities,- cemeteries,- sports and recreation facilities, such as stadiums, golf courses, racecourses, showgrounds, and fitness centres, - green spaces, such as community parks, gardens, and reserves, have strong economic ties where people gather together to work, and for social, cultural, and recreational interaction,have planned development within the next 5–8 years. Urban boundaries are independent of local government and other administrative boundaries. However, the Richmond urban area, which is mainly in the Tasman District, is the only urban area that crosses territorial authority boundaries Rural areasRural areas are classified as rural settlements or other rural. Rural settlementsRural settlements are statistically defined areas with no administrative or legal basis. A rural settlement is a cluster of residential dwellings about a place that usually contains at least one community or public building. Rural settlements are delineated using the following criteria. They: form a contiguous cluster of one or more SA1s,contain an estimated resident population of 200–1,000, or at least 40 residential dwellings,represent a reasonably compact area or have a visible centre of population with a population density of at least 200 residents per square kilometre or 100 address points per square kilometre,contain at least one community or public building, such as a church, school, or shop. To reach the target SA2 population size of more than 1,000 residents, rural settlements are usually included with other rural SA1s to form an SA2. In some instances, the settlement and the SA2 have the same name, for example, Kirwee rural settlement is part of the Kirwee SA2. Some rural settlements whose populations are just under 1,000 are a single SA2. Creating separate SA2s for these rural settlements allows for easy reclassification to urban areas if their populations grow beyond 1,000. Other ruralOther rural areas are the mainland areas and islands located outside urban areas or rural settlements. Other rural areas include land used for agriculture and forestry, conservation areas, and regional and national parks. Other rural areas are defined by territorial authority. WaterBodies of water are classified separately, using the land/water demarcation classification described in the Statistical standard for meshblock. These water areas are not named and are defined by territorial authority or regional council. The water classes include: inland water – non-contiguous, defined by territorial authority,inlets (which also includes tidal areas and harbours) – non-contiguous, defined by territorial authority,oceanic – non-contiguous, defined by regional council.To minimise suppression of population data, separate meshblocks have been created for marinas. These meshblocks are attached to adjacent land in the UR geography. Non-digitisedThe following 4 non-digitised UR areas have been aggregated from the 16 non-digitised meshblocks/SA2s.6901; Oceanic outside region, 6902; Oceanic oil rigs, 6903; Islands outside region, 6904; Ross Dependency outside region.UR numbering and naming Each urban area and rural settlement is a single geographic entity with a name and a numeric code. Other rural areas, inland water areas, and inlets are defined by territorial authority; oceanic areas are defined by regional council; and each have a name and a numeric code. Urban rural codes have four digits. North Island locations start with a 1, South Island codes start with a 2, oceanic codes start with a 6 and non-digitised codes start with 69.Urban rural indicator (IUR)The accompanying urban rural indicator (IUR) classifies the urban, rural, and water areas by type. Urban areas are further classified by the size of their estimated resident population:- major urban area – 100,000 or more residents,- large urban area – 30,000–99,999 residents,- medium urban area – 10,000–29,999 residents,- small urban area – 1,000–9,999 residents. This was based on 2018 Census data and 2021 population estimates. Their IUR status (urban area size/rural settlement) may change if the 2023 Census population count moves them up or down a category. The indicators, by name, with their codes in brackets, are: urban area – major urban (11), large urban (12), medium urban (13), small urban (14), rural area – rural settlement (21), rural other (22),water – inland water (31), inlet (32), oceanic (33). For more information please refer to the Statistical standard for geographic areas 2023.Clipped versionThis clipped version has been created for cartographic purposes and so does not fully represent the official full extent boundaries.MacronsNames are provided with and without tohutō/macrons. The column name for those without macrons is suffixed ‘ascii’.Digital dataDigital boundary data became freely available on 1 July 2007.</gco:CharacterString>
+      </gmd:abstract>
+      <gmd:purpose>
+        <gco:CharacterString>This dataset is the definitive version of the annually released urban rural (UR) boundaries as at 1 January 2023 as defined by Stats NZ (the custodian), clipped to the coastline.  This clipped version has been created for cartographic purposes and so does not fully represent the official full extent boundaries. This version contains 689 UR areas, including 195 urban areas and 402 rural settlements.</gco:CharacterString>
+      </gmd:purpose>
+      <gmd:credit>
+        <gco:CharacterString>Stats NZ – Tatauranga Aotearoa</gco:CharacterString>
+      </gmd:credit>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:individualName>
+            <gco:CharacterString>Geospatial Team</gco:CharacterString>
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>Stats NZ</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <gmd:CI_Telephone>
+                  <gmd:voice>
+                    <gco:CharacterString>0508 525 525</gco:CharacterString>
+                  </gmd:voice>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>geography@stats.govt.nz</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage>
+                    <gmd:URL>https://datafinder.stats.govt.nz/</gmd:URL>
+                  </gmd:linkage>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeSpace="ISOTC211/19115" codeListValue="owner">owner</gmd:CI_RoleCode>
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>rural area</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>urban area</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>urban rural</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>ur</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>UR</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>rural settlement</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>water</gco:CharacterString>
+          </gmd:keyword>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>Downloadable Data</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:thesaurusName/>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints>
+        <gmd:MD_Constraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>Creative Commons Attribution 4.0 International (CC BY 4.0)</gco:CharacterString>
+          </gmd:useLimitation>
+        </gmd:MD_Constraints>
+      </gmd:resourceConstraints>
+      <gmd:spatialRepresentationType>
+        <gmd:MD_SpatialRepresentationTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeSpace="ISOTC211/19115" codeListValue="vector">vector</gmd:MD_SpatialRepresentationTypeCode>
+      </gmd:spatialRepresentationType>
+      <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeSpace="ISO639-2" codeListValue="eng">eng</gmd:LanguageCode>
+      </gmd:language>
+      <gmd:characterSet>
+        <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeSpace="ISOTC211/19115" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
+      </gmd:characterSet>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>boundaries</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:environmentDescription>
+        <gco:CharacterString>Version 6.2 (Build 9200) ; Esri ArcGIS 10.8.1.14362</gco:CharacterString>
+      </gmd:environmentDescription>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:extentTypeCode>
+                <gco:Boolean>true</gco:Boolean>
+              </gmd:extentTypeCode>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>-180</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>180</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>-47.841491</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>-33.559984</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:extentTypeCode>
+                <gco:Boolean>true</gco:Boolean>
+              </gmd:extentTypeCode>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>-180</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>180</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>-47.421563</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>-33.773403</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:distributionInfo>
+    <gmd:MD_Distribution>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>File Geodatabase Feature Class</gco:CharacterString>
+          </gmd:name>
+          <gmd:version/>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeSpace="ISOTC211/19115" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+          </gmd:level>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:lineage>
+        <gmd:LI_Lineage>
+          <gmd:statement>
+            <gco:CharacterString>The urban rural geography is based on the meshblock pattern. Non-alignment of meshblock to cadastral boundaries is one of a number of reasons for meshblock boundary adjustments. Other reasons include requests from local authorities, Local Government Commission, Electoral Representation Commission, and to make census enumeration processes easier. From the meshblock pattern, higher geographies, including the urban rural pattern, were dissolved using the dissolve tool in the Arc GIS suite.</gco:CharacterString>
+          </gmd:statement>
+        </gmd:LI_Lineage>
+      </gmd:lineage>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+</gmd:MD_Metadata>
