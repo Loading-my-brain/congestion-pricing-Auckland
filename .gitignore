@@ -2,3 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# Ignore large data files
+data/census.csv
+data/census_akl.csv
+Data_Exploration/all_figures/map_all_modes_stacked.html
+
+
+# Ignore bin folders
+Bin/
+data/Bin/
