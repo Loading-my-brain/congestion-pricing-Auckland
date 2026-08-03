@@ -85,7 +85,7 @@ sa2_renamed_2023 <- sa2_ind %>%
 # Clip By Boundary
 #________________________________
 # Boundary Layer 
-# boundary = st_read("./data/boundary/TA-2023-clipped.shp")
+# boundary = st_read("./data/boundary/TA-2023-clipped.shp") #Not Akl boundary anymore
 # akl_boundary = boundary %>%# Filter to Auckland
 #   filter(TA2023_V1_ == "076")
 
@@ -133,12 +133,12 @@ sa2_clipped_final <- sa2_clipped_clean %>%
 
 
 
-# sf::st_write(
-#   sa2_clipped_final,
-#   dsn = "./data/Saved/sa2_clipped_clean.gpkg",
-#   layer = "sa2_clipped_clean",
-#   delete_dsn = TRUE # Overwrites the file if it already exists
-# )
+sf::st_write(
+  sa2_clipped_final,
+  dsn = "./data/Saved/sa2_clipped_clean.gpkg",
+  layer = "sa2_clipped_clean",
+  delete_dsn = TRUE # Overwrites the file if it already exists
+)
 
 
 
