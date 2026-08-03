@@ -151,6 +151,15 @@ map_renter_share <- create_interactive_map(
   style = "quantile"
 )
 
+
+map_owner_share <- create_interactive_map(
+  data = home_ownership_analysis, 
+  variable = "prop_homeownership_owners", 
+  title = "Renter Share ", 
+  palette = "YlOrRd",
+  style = "quantile"
+)
+
 # Map:Renter Density (Renters per sq km)
 # This shows where physical rental housing pressure and demand is concentrated (eg: CBD apartments)
 map_renter_density <- create_interactive_map(
@@ -171,71 +180,52 @@ map_renter_density <- create_interactive_map(
 
 
 #  A. Homeowners 
-top_10_owner_share <- home_ownership_analysis %>%
+(top_10_owner_share <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, prop_homeownership_owners) %>%
-  slice_max(order_by = prop_homeownership_owners, n = 10, with_ties = FALSE)
+  slice_max(order_by = prop_homeownership_owners, n = 10, with_ties = FALSE))
 
-bottom_10_owner_share <- home_ownership_analysis %>%
+(bottom_10_owner_share <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, prop_homeownership_owners) %>%
-  slice_min(order_by = prop_homeownership_owners, n = 10, with_ties = FALSE)
+  slice_min(order_by = prop_homeownership_owners, n = 10, with_ties = FALSE))
 
 #  B. Renters 
-top_10_renter_share <- home_ownership_analysis %>%
+(top_10_renter_share <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, prop_homeownership_renters) %>%
-  slice_max(order_by = prop_homeownership_renters, n = 10, with_ties = FALSE)
+  slice_max(order_by = prop_homeownership_renters, n = 10, with_ties = FALSE))
 
-bottom_10_renter_share <- home_ownership_analysis %>%
+(bottom_10_renter_share <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, prop_homeownership_renters) %>%
-  slice_min(order_by = prop_homeownership_renters, n = 10, with_ties = FALSE)
+  slice_min(order_by = prop_homeownership_renters, n = 10, with_ties = FALSE))
 
 
 
 # 2. OWNER AND RENTER DENSITIES (People/sq km)
 
 #  A. Homeowners 
-top_10_owner_density <- home_ownership_analysis %>%
+(top_10_owner_density <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, density_homeownership_owners) %>%
-  slice_max(order_by = density_homeownership_owners, n = 10, with_ties = FALSE)
+  slice_max(order_by = density_homeownership_owners, n = 10, with_ties = FALSE))
 
-bottom_10_owner_density <- home_ownership_analysis %>%
+(bottom_10_owner_density <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, density_homeownership_owners) %>%
-  slice_min(order_by = density_homeownership_owners, n = 10, with_ties = FALSE)
+  slice_min(order_by = density_homeownership_owners, n = 10, with_ties = FALSE))
 
 #  B. Renters (matching my exact column spelling) 
-top_10_renter_density <- home_ownership_analysis %>%
+(top_10_renter_density <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, density_homeownership_renters) %>%
-  slice_max(order_by = density_homeownership_renters, n = 10, with_ties = FALSE)
+  slice_max(order_by = density_homeownership_renters, n = 10, with_ties = FALSE))
 
-bottom_10_renter_density <- home_ownership_analysis %>%
+(bottom_10_renter_density <- home_ownership_analysis %>%
   st_drop_geometry() %>%
   select(usual_residence_statistical_area_2_name_na, density_homeownership_renters) %>%
-  slice_min(order_by = density_homeownership_renters, n = 10, with_ties = FALSE)
-
-
-
-#  Print Shares  
-print(" TOP 10 HOMEOWNER SHARES  ")
-print(top_10_owner_share)
-
-print(" TOP 10 RENTER SHARES  ")
-print(top_10_renter_share)
-
-#  Print Densities (People/sq km) 
-print(" TOP 10 HOMEOWNER DENSITIES ")
-print(top_10_owner_density)
-
-print(" TOP 10 RENTER DENSITIES ")
-print(top_10_renter_density)
-
-
-
+  slice_min(order_by = density_homeownership_renters, n = 10, with_ties = FALSE))
 
 
 
