@@ -1,0 +1,135 @@
+``` yaml
+---
+title: "Home Ownership Documentation"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+```
+
+# Individual Home Ownership Analysis Documentation
+
+## 1. Data Documentation & Validation
+
+I processed and validated the individual home ownership variables from the 2023 Census at the SA2 level for Auckland ($N = 504$ spatial units). In the NZ Census, **individual home ownership** measures whether an individual person owns their usual residence (either outright, with a mortgage, or through a family trust) or does not own it.
+
+Home ownership could be useful for the GWR model (E\[PT mode share\]) as this individual-level metric could be useful for [modeling personal travel choices, as property ownership status is a proxy for individual wealth, age, and long-term residential stability](https://www.sustainablecities.org.nz/node/541). BUT! collinearity should be checked
+
+### Variable Definitions and Transformations
+
+I cleaned and renamed the raw census columns into a standardized format: \* `prop_homeownership_owners`: The proportion of individuals who own, partly own, or hold their home in a family trust. \* `prop_homeownership_renters`: The proportion of individuals who do not own their home and do not hold it in a family trust (the standard census proxy for renters). \* `density_homeownership_owners`: The spatial density of homeowners (calculated as owners per unit area). \* `density_homeownership_renters`: The spatial density of renters (calculated as renters per unit area).
+
+------------------------------------------------------------------------
+
+## 2. Statistical Findings & Academic Analysis
+
+### Descriptive Statistics
+
+The descriptive summary reveals that at an individual level, the majority of Auckland's neighborhood populations are non-homeowners (renters):
+
+-   **Renter Proportions:** The regional mean for individual renters is $\mu = 59.9\%$ ($\text{Median} = 59.2\%$). In highly transient or industrial neighborhoods, the renter share reaches $100\%$.
+-   **Owner Proportions:** Individual homeowners account for a regional mean of $\mu = 40.2\%$ ($\text{Median} = 40.8\%$), peaking at $70.2\%$ in high-wealth, low-density suburbs.
+
+### Statistical Modeling: Paired $t$-test
+
+To mathematically confirm the difference between individual-level ownership and rental profiles across Auckland, I executed a standard paired $t$-test comparing `prop_homeownership_owners` and `prop_homeownership_renters` directly across the $504$ neighborhoods:
+
+$$\text{t}(502) = -16.971, \quad p < 2.2 \times 10^{-16}$$
+
+The mean difference is $-19.7\%$ (95% CI: $[-22.0\%, -17.4\%]$).
+
+**Academic Interpretation:** There is an exceptionally strong, statistically significant difference between individual homeowner and renter shares across Auckland. Across the region, the individual renter share is approximately $20$ percentage points higher than the homeowner share.
+
+*(Note: Because this is individual-level data rather than household-level, this reflects the reality of Auckland's housing market where large numbers of working-age adults, flatmates, and multi-generational family members do not personally own the property they live in, even if the household is owner-occupied).*
+
+------------------------------------------------------------------------
+
+## 3. Spatial Extremes: Top and Bottom Ownership Neighborhoods
+
+I isolated the top 10 neighborhoods for both shares and densities to analyze where these tenure types are geographically clustered.
+
+### Homeowner Share and Density Extremes
+
+##### Top 10 Homeowner Share (Proportion)
+
+1.  **Laingholm:** $70.2\%$
+2.  **Waima-Woodlands Park:** $69.7\%$
+3.  **Titirangi South:** $69.4\%$
+4.  **Konini Road:** $65.5\%$
+5.  **Cheltenham:** $64.2\%$
+6.  **Glendowie North:** $64.2\%$
+7.  **Henderson Lincoln East:** $64.2\%$
+8.  **Saint Heliers West:** $64.1\%$
+9.  **Milford Central:** $63.8\%$
+10. **Beach Haven South:** $63.7\%$
+
+##### Top 10 Homeowner Density (People/sq km)
+
+1.  **Hobsonville Point Park:** $4.21$
+2.  **Titirangi South:** $3.46$
+3.  **Cockle Bay:** $3.46$
+4.  **Whenuapai:** $3.33$
+5.  **Saint Heliers North:** $3.26$
+6.  **Narrow Neck:** $3.24$
+7.  **Somerville:** $3.23$
+8.  **Mellons Bay:** $3.13$
+9.  **Saint Heliers West:** $3.05$
+10. **Remuera Waitaramoa:** $2.93$
+
+**Academic Interpretation:** The neighborhoods with the highest homeowner *proportions* are concentrated in Auckland’s leafy, low-density outer fringes (e.g., the Waitākere Ranges: Laingholm, Waima, Titirangi, Konini Road) and wealthy coastal enclaves (Cheltenham, Saint Heliers, Milford).
+
+However, looking at *density*, the picture shifts. High-density homeownership is concentrated in modern, master-planned developments like Hobsonville Point, or established, wealthy, medium-density suburbs like Remuera and Saint Heliers.
+
+------------------------------------------------------------------------
+
+### Renter Share and Density Extremes
+
+##### Top 10 Renter Share (Proportion)
+
+1.  **Ōtāhuhu Industrial:** $100.0\%$
+2.  **Westgate Central:** $100.0\%$
+3.  **Panmure Glen Innes Industrial:** $93.3\%$
+4.  **Symonds Street North West:** $92.1\%$
+5.  **Symonds Street East:** $91.2\%$
+6.  **Sylvia Park:** $89.7\%$
+7.  **Symonds Street West:** $89.5\%$
+8.  **Hobson Ridge Central:** $88.7\%$
+9.  **Point England North:** $88.6\%$
+10. **Ōtāhuhu North West:** $86.3\%$
+
+##### Top 10 Renter Density (People/sq km)
+
+1.  **Parnell West:** $4.63$
+2.  **Symonds Street North West:** $4.10$
+3.  **Symonds Street West:** $4.07$
+4.  **Avondale South (Auckland):** $3.67$
+5.  **Glen Innes East-Wai O Taiki Bay:** $3.63$
+6.  **Glen Innes West:** $3.58$
+7.  **Harania North:** $3.49$
+8.  **Anzac Avenue:** $3.49$
+9.  **Victoria Park:** $3.47$
+10. **Avondale West (Auckland):** $3.43$
+
+**Academic Interpretation:** The renter *proportions* show a clear structural split. Renters heavily dominate in industrial/commercial fringes (Ōtāhuhu Industrial, Westgate, Panmure, Sylvia Park) where residential populations are small but highly transient, and in the student/academic core (Symonds Street, Hobson Ridge).
+
+Renter *densities* are highest in the inner-city apartments (Parnell West, Symonds Street, Anzac Avenue, Victoria Park) and working-class suburban nodes with high concentrations of social housing and rental stock (Avondale, Glen Innes, Harania).
+
+------------------------------------------------------------------------
+
+## 4. Honours Research Reflections on Transport Behavior
+
+Honestly, mapping individual homeownership is where the structural transport story starts to get real. Linking tenure status to travel choices exposes the deep inequalities built into Auckland's geography:
+
+-   **The Waitākere Car Dependency Trap:** Suburbs like Titirangi, Laingholm, and Waima have some of the highest homeowner shares in the region. But they are physically isolated, hilly, and low-density. Homeowners here are almost entirely locked into car use because traditional public transit or cycling infrastructure is physically difficult to implement in the bush-clad Waitākere Ranges. Here, homeownership directly correlates with high car dependency.
+-   **The High-Deprivation Renter Precarity:** In industrial fringes like Ōtāhuhu Industrial or Sylvia Park, we see renter shares hitting up to $100\%$. These residents are often lower-income shift workers living in car-centric, industrial environments. They face severe transport precarity: they have the lowest financial access to private cars, yet they live in areas with virtually no safe walking, cycling, or public transport options outside of peak hours.
+-   **The Transit-Amenity Privilege:** The high renter densities in the CBD (Parnell, Symonds Street, Anzac Avenue) align perfectly with our public transport and active mode outliers. These renters are geographically privileged—they can afford to live in transit-rich areas where they can easily bypass car ownership.
+-   **The Suburban Tenant Gap:** In contrast, renters in Avondale and Glen Innes live in high densities but must navigate suburban transit deficits. They have high rental costs but limited transport choices, making them highly vulnerable to transport poverty.
+
+------------------------------------------------------------------------
+
+## 5. Task List: Next Steps
+
+-   [ ] **Conduct Bivariate Correlation Tests:** Run Pearson's correlation tests between `prop_homeownership_renters` and travel mode shares (specifically Private Car vs. Public Transport/Active Modes) to establish the baseline relationship.
+-   [ ] **Build Local GWR Predictors:** Integrate the calculated homeowner and renter proportions as key socio-economic explanatory variables ($X$) in the local Geographically Weighted Regression models.
+-   [ ] **Test for Spatial Co-location (LISA):** Run Local Bivariate Moran's $I$ to identify if hotspots of renting are statistically co-located with hotspots of public transport and active transit usage across Auckland.
+-   [ ] **Incorporate Wealth Proxies:** Cross-reference individual homeownership rates with median personal income brackets to isolate the independent effect of housing tenure on travel behavior.

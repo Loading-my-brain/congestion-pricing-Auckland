@@ -1,0 +1,307 @@
+---
+title: "Auckland SA2 Census Cleaning & Travel-to-Work Processing"
+author: "Hinami Ariana Nishi"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+#### Introduction
+
+This document outlines the full workflow used to prepare, clean, and structure the 2023 Census SA2 dataset for Auckland, with a specific focus on variables related to **main means of travel to work**.  
+
+The workflow includes:
+
+- loading SA2 spatial data  
+- joining lookup metadata  
+- renaming variables into human‑readable formats  
+- clipping the dataset to the Auckland TA boundary  
+- cleaning sentinel values  
+- extracting travel‑to‑work variables  
+- preparing additional demographic groups for later analysis  
+
+This `.qmd` file ensures the workflow is **transparent, reproducible, and version‑controlled** for research purposes.
+
+
+## Data Clean
+
+### Load Libraries
+
+```{r}
+library(sp)
+library(sf)
+library(GWmodel)
+library(dplyr)
+library(tidyverse)
+library(tmap)
+library(RColorBrewer)
+library(grid)
+library(gridExtra)
+library(terra)
+library(janitor)
+library(stringr)
+```
+
+
+### Load SA2 Data and Lookup Table
+
+```{r}
+# Name of the data: 2023 Census totals by topic for individuals by statistical area 2 – part 2
+sa2_ind <- st_read("./data/SA2-individual/2023-census-totals-by-topic-for-individuals-by-statistical-a.shp")
+look_up = read.csv("./data/SA2-individual/2023_census_totals_by_topic_for_individuals_by_sa2_part_2_lookup_table.csv")
+```
+
+
+###  Identify Travel-to-Work Variables
+
+```{r}
+# Search for columns related to travel to work
+travel_vars <- look_up %>%
+  filter(str_detect(Variable1, "Main means of travel to")) %>%
+  select(c(Shapefile_name, Variable1, Variable1_category, Year, Field_name_alias))
+
+#Mode Types
+(unique(travel_vars$Variable1_category))
+
+look_up[which(is.na(look_up$Year)), ]# Inspect the rows where years show NAs; we keep these
+
+# Filter the lookup table FIRST to keep only 2023 variables and geographic metadata
+look_up_2023 <- look_up %>%
+  filter(Year == 2023 | is.na(Year)) # %>%# Keep variables from 2023 OR variables with NA years (geographic codes/names)
+```
+
+
+### Build Clean Descriptive Names
+
+```{r}
+# Build descriptive names for the 2023 dataset
+look_up_cleaned_2023 <- look_up_2023 %>%
+  mutate(
+    descriptive_name = case_when(
+      # If both main variable and category exist, combine them with the year
+      !is.na(Variable1) & !is.na(Variable1_category) ~ paste(Variable1, Variable1_category, Year, sep = "_"),
+      
+      # Otherwise use the field name alias
+      !is.na(Field_name_alias) ~ paste(Field_name_alias, Year, sep = "_"),
+      
+      # Fallback to the original shapefile name
+      TRUE ~ Shapefile_name
+    )
+  ) %>%
+  mutate(clean_name = make_clean_names(descriptive_name)) # (eg: "usual_residence_public_bus_2023")
+# glimpse(look_up_cleaned_2023)
+```
+
+
+
+### Subset and Rename SA2 Columns
+
+```{r}
+
+rename_map_2023 <- setNames(look_up_cleaned_2023$clean_name, look_up_cleaned_2023$Shapefile_name)# Create a named vector mapping old names to new names: c("old_name" = "new_name")
+
+#Explicitly define which spatial columns must be preserved
+spatial_cols <- c("SA22023_V1", "SA22023__1", "SA22023__2", "AREA_SQ_KM", "LAND_AREA_SQ_KM") # del->, "Shape_Leng", "geometry"
+# spatial_cols %in% names(rename_map_2023) #Sanity Check
+
+
+
+# Subset the dataset to keep ONLY spatial columns and 2023 columns, then rename them
+sa2_renamed_2023 <- sa2_ind %>%
+  
+  # subset columns first (dropping 2013 and 2018)
+  select(any_of(c(spatial_cols, names(rename_map_2023)))) %>%
+  
+  # rename remaining columns in bulk
+  rename_with(~ recode(., !!!rename_map_2023), .cols = any_of(names(rename_map_2023)))
+
+
+```
+
+
+
+### Clip to Auckland Boundary
+
+```{r}
+# Boundary Layer 
+boundary = st_read("./data/boundary/TA-2023-clipped.shp")
+akl_boundary = boundary %>%# Filter to Auckland
+  filter(TA2023_V1_ == "076")
+
+#Align projections-Ensure the Auckland boundary uses the exact same projection as your SA2 variables
+akl_boundary_proj <- st_transform(akl_boundary, st_crs(sa2_renamed_2023) )
+# Perform the physical clip (st_intersection)
+# This removes all national data and oceanic data outside the Auckland TA boundary line
+sa2_clipped <- st_intersection(sa2_renamed_2023, akl_boundary_proj)
+
+# Clean up the clipped boundaries (This fixes the terra plotting error)
+sa2_clipped_clean <- sa2_clipped %>%
+  st_make_valid() %>%                      # Repair self-intersections/invalid border shapes
+  st_collection_extract("POLYGON") %>%     # Drop points and lines created on the boundary edges
+  st_cast("MULTIPOLYGON") %>%              # Standardize geometry types to MULTIPOLYGON
+  filter(!st_is_empty(.))                  # Remove any empty geometry rows
+
+# Convert and plot
+# This will now convert and plot with terra without any geometry mismatch errors
+plot(vect(sa2_clipped_clean), col = "lightblue", main = "Auckland Region Only (Clipped)")
+```
+
+
+
+### Clean Sentinel Values (-999, -997)
+
+```{r}
+#summary(sa2_clipped_clean) #we notice -999, -997 vals (typical for statsNZ dataset)
+# Replace all negative values (-999, -997) with NA across all numeric columns
+sa2_clipped_final <- sa2_clipped_clean %>%
+  mutate(across(
+    where(is.numeric), 
+    ~ ifelse(. < 0, NA, .)
+  ))
+
+# sf::st_write(
+#   sa2_clipped_final,
+#   dsn = "./data/Saved/sa2_clipped_clean.gpkg",
+#   layer = "sa2_clipped_clean",
+#   delete_dsn = TRUE # Overwrites the file if it already exists
+# )
+
+
+# UNDERSTANDNING THE DATA - CONTEXT 
+# How many neighbourhoods in my Auckland SA2?
+length(unique(home_to_work$usual_residence_statistical_area_2_name_na))
+```
+
+
+
+## Understand the TRAVELLING GROUPS
+
+```{r}
+#Load Cleaned Data for Analysis
+sa2_clipped_clean <- st_read("./data/Saved/sa2_clipped_clean.gpkg")
+```
+
+### Inspecting the variable 
+
+```{r}
+# Inspection
+sum(str_detect(colnames(sa2_clipped_clean), "main_means_of_travel_to")) #Inspecting the num of cols of travel groups
+travel_groups_inspect = sa2_clipped_clean[,which(str_detect(colnames(sa2_clipped_clean), "main_means_of_travel_to"))]
+# View(travel_groups_inspect) #What these are....
+sum(str_detect(colnames(travel_groups_inspect), "main_means_of_travel_to"))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# SOME NOTES
+# There are essentially 4 groups in these data:
+
+# # 1. Trip to work
+# - main_means_of_travel_to_work_by_usual_residence
+# - main_means_of_travel_to_work_by_workplace_address
+# 
+# # Trip to education
+# - main_means_of_travel_to_education_by_usual_residence_address
+# - main_means_of_travel_to_education_by_education_address #What does this mean? 
+
+# I will be focusing on the home->work dataset
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+```
+
+
+
+
+### Filter to home to work travel
+
+```{r}
+# Inspect Home-to-work data set and filter
+home_to_work <- sa2_clipped_clean %>%
+  select(!contains(c(
+    "main_means_of_travel_to_education_by_usual_residence_address", 
+    "main_means_of_travel_to_education_by_education_address", 
+    "main_means_of_travel_to_work_by_workplace_address"
+  ))) 
+```
+
+
+### Rename Travel Mode Columns for convenience
+
+```{r}
+home_to_work_clean <- home_to_work %>%
+  rename_with(
+    ~ .x %>% 
+      str_remove("^main_means_of_travel_to_work_by_usual_residence_address_") %>% 
+      str_remove("_2023$") %>% 
+      paste0("transportMode_", .), # Adds 'transport_' to the front
+    .cols = starts_with("main_means_of_travel_to_work_by_usual_residence_address_")
+  )
+
+
+```
+
+
+
+### Save Home-to-Work Dataset
+
+```{r}
+sf::st_write(
+  home_to_work_clean,
+  dsn = "./data/Saved/home_to_work.gpkg",
+  layer = "home_to_work",
+  delete_dsn = TRUE
+)
+```
+
+
+
+### Inspect Additional Variable Groups
+
+```{r}
+variable_name_inspect <- function(data, str_detection) {
+  matching_cols <- colnames(data)[str_detect(colnames(data), str_detection)]
+  cat("Found", length(matching_cols), "columns matching pattern '", str_detection, "':\n")
+  print(matching_cols)
+  subset_data <- data[, matching_cols, drop = FALSE]
+  return(subset_data)
+}
+
+ho_vars <- variable_name_inspect(home_to_work_clean, "individual_home_ownership_")
+res1_vars <- variable_name_inspect(home_to_work_clean, "usual_residence_1_year_ago_indicator_")
+res5_vars <- variable_name_inspect(home_to_work_clean, "usual_residence_5_years_ago_indicator_")
+yrs_res_vars <- variable_name_inspect(home_to_work_clean, "years_at_usual_residence_")
+arrival_vars <- variable_name_inspect(home_to_work_clean, "years_since_arrival_in_new_zealand_")
+study_vars <- variable_name_inspect(home_to_work_clean, "study_participation_")
+highest_qual_vars <- variable_name_inspect(home_to_work_clean, "highest_qualification_")
+post_school_nz_vars <- variable_name_inspect(home_to_work_clean, "post_school_qualification_in_new_zealand_indicator_")
+sec_qual_vars <- variable_name_inspect(home_to_work_clean, "highest_secondary_school_qualification_")
+attainment_vars <- variable_name_inspect(home_to_work_clean, "post_school_qualification_level_of_attainment_")
+inc_sources_vars <- variable_name_inspect(home_to_work_clean, "sources_of_personal_income_total_responses_")
+total_inc_vars <- variable_name_inspect(home_to_work_clean, "total_personal_income_")
+labour_status_vars <- variable_name_inspect(home_to_work_clean, "work_and_labour_force_status_")
+job_search_vars <- variable_name_inspect(home_to_work_clean, "job_search_methods_total_responses_")
+emp_status_vars <- variable_name_inspect(home_to_work_clean, "status_in_employment_")
+unpaid_vars <- variable_name_inspect(home_to_work_clean, "unpaid_activities_total_responses_")
+hours_vars <- variable_name_inspect(home_to_work_clean, "hours_worked_in_employment_per_week_")
+ind_res_vars <- variable_name_inspect(home_to_work_clean, "industry_by_usual_residence_address_")
+ind_work_vars <- variable_name_inspect(home_to_work_clean, "industry_by_workplace_address_")
+occ_res_vars <- variable_name_inspect(home_to_work_clean, "occupation_by_usual_residence_address_")
+occ_work_vars <- variable_name_inspect(home_to_work_clean, "occupation_by_workplace_address_")
+transport_vars <- variable_name_inspect(home_to_work_clean, "transportMode_")
+sector_vars <- variable_name_inspect(home_to_work_clean, "sector_of_ownership_")
+source_vars <- variable_name_inspect(home_to_work_clean, "individual_unit_data_source_")
+```
+
+
+
+### 18. Next Steps
+
+You can now:
+
+- map travel‑to‑work patterns  
+- analyse mode share differences across SA2  
+- integrate vehicle ride‑time (Google Directions API)  
+- build OD matrices  
+- model accessibility or congestion impacts  
+
+This cleaned dataset is ready for spatial analysis, modelling, and visualisation.

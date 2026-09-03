@@ -1,0 +1,144 @@
+---
+title: "Origin Distance Analysis (Basic)"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+
+Meta Data: https://datafinder.stats.govt.nz/table/121988-2023-census-main-means-of-travel-to-work-by-statistical-area-2/
+
+Top Wealthiest Suburbs in Auckland(from https://share.google/aimode/wrHKjVMJGMttFgUdh) Herne Bay: Median values hover around \$3.0M to \$3.2M, known for clifftop Waitematā Harbour views, elite marine villas, and close proximity to the CBD.Parnell: One of the oldest and most affluent areas with property indices near \$2.6M, favored for high-end boutique shopping, fine dining, and heritage character.Remuera: Long considered a premier traditional elite suburb with values around \$2.3M to \$2.9M, famous for grand family mansions, leafy avenues, and top private school zones.St Marys Bay: Neighboring Herne Bay with values near \$2.7M to \$2.8M, featuring high-density luxury homes and direct harbor outlooks.Ponsonby & Westmere: Trendy central-west neighborhoods boasting average values above \$2.2M, popular among high-income professionals for cafes, fashion strips, and renovated villas.Coastal & Rural Outliers: Exclusive lifestyle enclaves like Whitford and rural Coatesville regularly rival inner-city suburbs for raw property wealth, alongside ultra-high-value pockets on Waiheke Island.
+
+# Origin-Destination (OD) Flow Analysis & CBD Cordon Mapping
+
+------------------------------------------------------------------------
+
+## 1. The Methodological Breakthrough: Resident Data vs. True Flows
+
+Honestly, I really confused myself during the early stages of this data setup. I was completely overlooking how the main means of travel to work dataset is structured in Stats NZ.
+
+I was treating the standard SA2 Individual Part 2 dataset and the Origin-Destination (OD) flow dataset as the same thing, which was a massive headache. \* **SA2 Part 2 Data:** Is strictly resident-based (Origin only). It tells me *where* people live and their intended commute choice, but it gives zero information about where they are actually heading. \* **OD Flow Data:** Is a true relational flow dataset. It links specific geographical Origins (where people live) directly to their Destinations (where they work) using a matrix format \[1\].
+
+Once I separated these two concepts, I was able to load the database file (`2023-census-main-means-of-travel-to-work-by-statistical-a.dbf`) and crop the national dataset of over 65,000 routes down to **19,334 Auckland-to-Auckland specific commute routes**.
+
+------------------------------------------------------------------------
+
+## 2. Spatial Join, Coordinate Extraction, & The `NA` Bug
+
+To turn this tabular OD database into a visual map, I extracted the geographic centroids of Auckland’s 503 neighborhoods using the New Zealand Transverse Mercator projection (EPSG:2193) to ensure accurate physical distance calculations in meters. I then wrote a geometric desire-line function to construct straight spatial vectors (`LINESTRING`) connecting each origin centroid to its destination centroid.
+
+### Fixing the Fatal `NA` Deletion Bug
+
+During my initial vehicle count, R returned a total sum of entering vehicles that looked way too low. I realized I had hit a classic programming bug:
+
+``` r
+# The buggy code:
+od_private_vehicles = od_drive_private + od_drive_company
+```
+
+In R, mathematical operations propagate `NA` values. If a route had $50$ private drivers but `NA` company drivers (due to census data suppression), the entire sum evaluated to `NA`, deleting thousands of valid trips.
+
+I resolved this by wrapping the columns in a `coalesce` function, converting any suppressed `NA` values to `0` during calculations:
+
+``` r
+# The robust fix:
+od_private_vehicles = coalesce(od_drive_private, 0) + coalesce(od_drive_company, 0)
+```
+
+This simple adjustment recovered the true spatial volume, yielding a total of **29,643 private vehicles entering the CBD cordon**.
+
+------------------------------------------------------------------------
+
+## 3. Defining the Custom CBD Cordon (The Congestion Question)
+
+To model real-world vehicle flows, I defined a custom city center cordon boundary based on *Figure 36: City Centre Cordon Map* from the Auckland Congestion Question Technical Report. I mapped the cordon's coordinate limits as a spatial polygon in WGS84 and projected it into NZTM to match the master dataset:
+
+![](Data_Exploration/all_figures/AOI_cbd_boundary.html)
+
+By running a spatial intersection (`st_intersects`), I verified that my custom polygon caught exactly **21 SA2 neighborhoods** representing the actual Auckland CBD boundary:
+
+```         
+ [1] "Freemans Bay"               "Grafton"                    "Victoria Park"             
+ [4] "Karangahape West"           "Shortland Street"           "Symonds Street North West"  
+ [7] "Quay Street-Customs Street" "Auckland-University"        "Hobson Ridge South"        
+[10] "Hobson Ridge North"         "Symonds Street West"        "College Hill"              
+[13] "Parnell West"               "Hobson Ridge Central"       "Wynyard-Viaduct"           
+[16] "Queen Street South West"    "The Strand"                 "Queen Street"              
+[19] "Karangahape East"           "Symonds Street East"        "Anzac Avenue"
+```
+
+I then filtered for **inbound commutes only** (where the Origin centroid lies *outside* the CBD polygon and the Destination centroid lies *inside*).
+
+------------------------------------------------------------------------
+
+## 4. Results: Auckland's Central Inbound Commuter Flow
+
+Using the corrected spatial filter, I identified the top 15 suburban areas feeding private vehicle traffic into the city center cordon:
+
+| Rank | Origin Suburb                  | Origin SA2 Code | Total Inbound Vehicles |
+|:----:|:-------------------------------|:---------------:|:----------------------:|
+|  1   | Remuera Waitaramoa             |     140000      |          252           |
+|  2   | Herne Bay                      |     129700      |          225           |
+|  3   | Saint Heliers West             |     142700      |          225           |
+|  4   | Parnell East                   |     137400      |          222           |
+|  5   | Saint Heliers South            |     143500      |          216           |
+|  6   | Grey Lynn Central              |     132800      |          213           |
+|  7   | Mount Eden West                |     138400      |          213           |
+|  8   | Remuera North                  |     140500      |          213           |
+|  9   | Te Atatū Peninsula West        |     124800      |          207           |
+|  10  | Westmere South-Western Springs |     130300      |          207           |
+|  11  | Glendowie North                |     144001      |          198           |
+|  12  | Remuera Abbotts Park           |     143100      |          198           |
+|  13  | Point Chevalier East           |     129902      |          192           |
+|  14  | Epsom Central-South            |     140800      |          189           |
+|  15  | Morningside (Auckland)         |     133600      |          189           |
+
+### The Confidentiality Reality Check: Stats NZ's RR3 Rule
+
+To verify data integrity, I ran a modulo check on the inbound counts (`cbd_inbound_table$total_commute_vehicles %% 3`). Every single vehicle count returned a remainder of exactly `0`.
+
+This confirms that Statistics NZ's **Random Rounding to Base 3 (RR3)** confidentiality rule is fully active in this database. While it masks precise individual counts, it maintains the underlying spatial trends cleanly, leaving our regional patterns perfectly intact.
+
+------------------------------------------------------------------------
+
+## 5. Reflections: The Wealthy Commuter Paradox
+
+-   **Proportions vs. Volumes:** This OD dataset has completely reframed my research. In my earlier neighborhood-level analysis, I noted that high-income zones (like Remuera, Herne Bay, and St Heliers) had the lowest *proportions* of car dependency in Auckland, often showing higher rates of active modes or WFH. However, this OD flow table reveals a massive paradox: **these same wealthy suburbs are the absolute top origins for physical cars driving into the CBD.**
+-   **The Geography of Choice:** Even though a wealthy resident in Remuera is statistically more likely to work from home or catch a train than a low-income resident in South Auckland, the sheer density of CBD-employed professionals living in the wealthy inner-east means they still generate the highest absolute volumes of vehicle traffic entering the central cordon. This perfectly justifies why we must evaluate *both* percentage shares and absolute flow volumes in transport geography; focusing only on percentages completely hides who is actually clogging the inner-city motorways.
+-   **Debugging `tmap` v4:** During my spatial plot, R returned an warning: `[tm_lines()] Argument 'line_alpha' unknown.` This is a classic tmap version change issue. In `tmap v4`, line transparency is no longer controlled by `line_alpha`. I will need to update this parameter to use the new visual variable structure, likely controlling alpha within the color palette properties or mapping it as a constant to avoid visual bloat.
+
+------------------------------------------------------------------------
+
+## 6. Task List: Next Steps
+
+-   [ ] **Fix the `tmap` v4 Line Alpha Warning:** Adjust the mapping function to control line transparency using `col_alpha` or direct alpha scale mappings in `tmap v4`.
+-   [ ] **Incorporate Public Transport (PT) Inbound Flows:** Apply the same CBD cordon intersection to public transport modes (bus, train, ferry) to calculate the ratio of PT vs. Private Vehicle commuters entering the city center.
+-   [ ] **Map Flow Lines by Dominant Transit Mode:** Color-code the desire lines by their dominant commute type (e.g., Red for Car-dominated routes, Blue for PT-dominated routes) to show the spatial boundaries of Auckland’s transit network.
+-   [ ] **Compare 2018 vs. 2023 Flow Dynamics:** Leverage the `X2018_Total` and `X2023_Total` columns to measure how the volume of cars entering the CBD has changed post-pandemic.
+
+# Next Steps:
+
+-   [ ] Formula model checks GWR
+-   [ ] I need to figure out with the travel times to CBD.
+-   [ ] Investigate how r5r works - in preogress
+
+# Some questions:
+
+# formula_sa2_gwr \<- prop_aggregate_private_car \~ prop_homeownership_renters + prop_income_low_earners + car_time_cbd_mins
+
+# Action Items from last week
+
+-   [x] Correct cbd boundary layer and rerun the code
+-   [x] Check if the inbond flow is correct (the numbers are correct); I did manaul calcualtions on excel
+-   [ ] Maybe have poportions instead?
+-   [ ] Maybe we can downalod the Auckland region SA3, north vs s vs e vs w ?
+-   [ ] Learn what a sankey diagram is, learn how to create one
+-   [ ] create a sankey diagram
+
+Interpretation of Sankey: o evaluate the structural potential for modal shift among Auckland’s most heavily car-dependent CBD commuters, an interactive Sankey flow diagram was constructed using the 2023 Census Origin-Destination (OD) dataset \[1, 2\]. Rather than displaying a generalized regional average, this diagram specifically isolates the top ten origin suburbs (SA2s) that generate the highest physical volume of inbound private vehicle trips (including private and company drivers) entering the Auckland City Centre \[1, 2\]. Crucially, public transport was deliberately disaggregated into its constituent modes—Bus, Train, and Ferry—rather than being consolidated into a single, homogenized 'Public Transport' category. This methodological decision was made to investigate the precise alternative transit infrastructures available to these high-congestion neighborhoods. By analyzing the individual, disaggregated streams, we can evaluate whether the suburbs contributing most heavily to CBD vehicle congestion possess established, high-capacity rapid transit alternatives (such as rail in Kingsland and Ellerslie, or ferries in Saint Heliers and Orakei) or if they are structurally locked into private vehicle travel due to a localized deficit in specific, competitive non-car modes \[1, 5\]. This provides a highly localized, policy-relevant diagnostic of Auckland's spatial transit privilege, showing exactly where alternative transit infrastructures exist but are underutilized, and where they are completely absent. A key methodological limitation of this flow analysis is the ecological fallacy, which dictates that individual-level behaviors and constraints cannot be directly inferred from aggregated, area-level data \[1.1.2\]. While the disaggregated Sankey diagram allows us to evaluate the co-existence of high private vehicle use and the physical presence of transit infrastructure (such as rail or ferry lines) within the same neighborhood, we cannot definitively assume that the specific individuals who commute by car have viable, competitive public transport alternatives \[1.1.2\]. The census dataset captures revealed aggregate choices, but does not record individual 'choice sets' or specific travel constraints—such as trip-chaining for caregiving, non-standard work hours, or micro-spatial accessibility barriers within the SA2—which may render nearby transit non-viable for a given driver
+
+# Feed bacl
+
+-   Data viz - better
+    -   A sankey diagram can be used
+        -   can focus on the higgher income groups as well

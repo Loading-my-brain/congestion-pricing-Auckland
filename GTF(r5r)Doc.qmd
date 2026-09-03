@@ -1,0 +1,202 @@
+---
+title: "GTF"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+
+# Understanding the Variables in each data file in GTF.zip
+
+These datasets represent standard files from the **GTFS (General Transit Feed Specification)**, which is the universal format transit agencies use to share their scheduling and geographic data. Below is an explanation of each dataset and its columns based on your glimpses of the Auckland Transport data.
+
+------------------------------------------------------------------------
+
+1.  `agency` This table lists the different transit operators (bus companies, ferry companies, train operators) that run services under Auckland Transport.
+
+-   **`agency_id`**: A unique short code representing each operator (e.g., `"NZB"` for NZ Bus, `"FGL"` for Fullers Group, `"AM"` for AT Metro).
+-   **`agency_name`**: The full public name of the transit agency.
+-   **`agency_url`**: The official website of the agency.
+-   **`agency_timezone`**: The local timezone where the agency operates (always `"Pacific/Auckland"`).
+-   **`agency_lang`**: The primary language used (English, `"en"`).
+-   **`agency_phone`**: The customer contact phone number.
+-   **`agency_fare_url`**: A link to the agency's ticketing or fare page (empty/NA here).
+-   **`agency_email`**: The contact email address for the agency (empty/NA here).
+
+------------------------------------------------------------------------
+
+2.  `calendar` This table defines the weekly schedule for services. It tells you which days of the week a specific `service_id` is active.
+
+-   **`service_id`**: A unique ID representing a specific calendar schedule (e.g., `"Daily-1"`, `"ExSat-1"`).
+-   **`monday` to `sunday`**: Binary flags (`1` or `0`). A `1` means the service runs on that day of the week; `0` means it does not.
+-   **`start_date`**: The date when this weekly schedule begins operating, formatted as YYYYMMDD (e.g., `20260501` is May 1, 2026).
+-   **`end_date`**: The date when this weekly schedule stops operating, formatted as YYYYMMDD.
+
+------------------------------------------------------------------------
+
+3.  `calendar_dates` This table handles exceptions to the regular weekly schedules defined in `calendar` (such as public holidays or temporary service changes).
+
+-   **`service_id`**: Links back to the `service_id` in the `calendar` table.
+-   **`date`**: The specific date of the exception, formatted as YYYYMMDD.
+-   **`exception_type`**:
+    -   `1`: Service is **added** for this specific date (even if the regular weekly calendar says it shouldn't run).
+    -   `2`: Service is **removed/cancelled** for this specific date (even if the regular weekly calendar says it should run).
+
+------------------------------------------------------------------------
+
+4.  `fare_attributes` (Empty in your glimpse) This table defines the parameters for different fare categories.
+
+-   **`fare_id`**: Unique identifier for a fare option.
+-   **`price`**: Cost of the fare.
+-   **`currency_type`**: Currency code (e.g., NZD).
+-   **`payment_method`**: How the fare is paid (e.g., cash on board vs. pre-paid/HOP card).
+-   **`transfers`**: Number of allowed transfers.
+-   **`agency_id`**: Links the fare to a specific agency.
+-   **`transfer_duration`**: Time window (in seconds) allowed to make a transfer.
+
+------------------------------------------------------------------------
+
+5.  `fare_rules` (Empty in your glimpse) This table defines how fares map to specific routes or zones.
+
+-   **`fare_id`**: Links to `fare_attributes`.
+-   **`route_id`**: Links to `routes`.
+-   **`origin_id` / `destination_id` / `contains_id`**: IDs corresponding to fare zones to calculate distance- or zone-based pricing.
+
+------------------------------------------------------------------------
+
+6.  `feed_info` Metadata about the GTFS dataset itself.
+
+-   **`feed_publisher_name`**: The organization that publishes the feed (`"Auckland Transport"`).
+-   **`feed_publisher_url`**: The URL of the publisher.
+-   **`feed_lang`**: The default language of the feed text.
+-   **`feed_start_date` / `feed_end_date`**: The validity window for this specific GTFS data package.
+-   **`feed_version`**: The internal version string/build code for this feed generation.
+
+------------------------------------------------------------------------
+
+7.  `frequencies` (Empty in your glimpse) Used for routes that do not run on a strict, minute-by-minute timetable but instead run every $X$ minutes (e.g., "runs every 10 minutes between 7 AM and 9 AM").
+
+-   **`trip_id`**, **`start_time`**, **`end_time`**, **`headway_secs`**, **`exact_times`**: Define interval timing windows and whether schedules are exact or approximate.
+
+------------------------------------------------------------------------
+
+8.  `routes` Defines the distinct transit lines or routes (e.g., "Route 101").
+
+-   **`route_id`**: Unique identifier for the route.
+-   **`agency_id`**: Identifies which operator runs this route (links to `agency`).
+-   **`route_short_name`**: The public-facing route number or code (e.g., `"101"`, `"MTIA"`).
+-   **`route_long_name`**: The full public name of the route (often same as short name, or descriptive names).
+-   **`route_desc`**: Detailed description of the route (typically NA).
+-   **`route_type`**: The type of transport used. Common GTFS values include:
+    -   `2`: Rail / Trains
+    -   `3`: Bus
+    -   `4`: Ferry
+-   **`route_url`**: Web page link for the route (typically NA).
+-   **`route_color`**: Hex code for the color used to represent this route on maps (e.g., `"00B1BF"`).
+-   **`route_text_color`**: Hex code for the text drawn over the route color (e.g., `"152239"`).
+-   **`route_sort_order`**: Ordering preference for displaying the route in lists (typically NA).
+-   **`contract_id`**: A custom Auckland Transport field linking the route to a specific regional operations contract.
+
+------------------------------------------------------------------------
+
+9.  `shapes` Contains the detailed geographical coordinates (latitude and longitude) used to draw the actual path of a route on a map.
+
+-   **`shape_id`**: Unique ID representing a specific physical path.
+-   **`shape_pt_lat`**: Latitude of a point along the path.
+-   **`shape_pt_lon`**: Longitude of a point along the path.
+-   **`shape_pt_sequence`**: The order of the coordinate point along the path (starting at 1 and counting up).
+-   **`shape_dist_traveled`**: The cumulative distance from the start of the shape to this point.
+
+------------------------------------------------------------------------
+
+10. `stop_times` This is one of the largest tables. It lists the scheduled arrival and departure times for every single stop on every single trip.
+
+-   **`trip_id`**: Links to a specific scheduled journey in `trips`.
+-   **`arrival_time`**: Scheduled arrival time at the stop (formatted as HH:MM:SS. Times can exceed 24:00:00 for trips running past midnight).
+-   **`departure_time`**: Scheduled departure time.
+-   **`stop_id`**: The unique identifier of the physical stop (links to `stops`).
+-   **`stop_sequence`**: The sequence number of this stop along the trip (e.g., stop 1, stop 2, stop 3).
+-   **`stop_headsign`**: The text displayed on the vehicle's destination sign when approaching this stop.
+-   **`pickup_type`**: How passengers can board (`0` = regular scheduled boarding, `1` = no pickup allowed).
+-   **`drop_off_type`**: How passengers can alight (`0` = regular scheduled drop-off, `1` = no drop-off allowed).
+-   **`shape_dist_traveled`**: The distance from the start of the trip's path to this specific stop.
+-   **`timepoint`**: Indicates if the schedule is strictly timed at this stop (`1` = exact timepoint, `0` = estimated/approximate arrival time).
+
+------------------------------------------------------------------------
+
+11. `stops` This table lists all physical locations where vehicles stop to pick up or drop off passengers (bus stops, train stations, ferry terminals).
+
+-   **`stop_id`**: Unique identifier for the stop.
+-   **`stop_code`**: A shorter, human-readable ID (often printed on physical bus stop signs).
+-   **`stop_name`**: The public name of the stop (e.g., `"Stop A Lower Albert"`).
+-   **`stop_desc`**: Descriptive details of the stop (typically NA).
+-   **`stop_lat`**: Latitude of the stop.
+-   **`stop_lon`**: Longitude of the stop.
+-   **`zone_id`**: Fare zone identifier (typically NA here).
+-   **`stop_url`**: Website for the stop (typically NA).
+-   **`location_type`**:
+    -   `0`: A standard stop or platform.
+    -   `1`: A station (a parent location that can contain multiple platforms or stops).
+-   **`parent_station`**: If the stop is a platform (`location_type = 0`), this field contains the `stop_id` of the larger station it belongs to.
+-   **`stop_timezone`**: Specific timezone for the stop (typically NA).
+-   **`platform_code`**: The specific platform letter/number (e.g., `"A"`, `"B"`).
+-   **`wheelchair_boarding`**: Accessibility information (`0` = no info, `1` = accessible, `2` = not accessible).
+-   **`start_date` / `end_date`**: Auckland Transport custom fields specifying the active lifespan dates of this physical stop in the system.
+
+------------------------------------------------------------------------
+
+12. `transfers` Defines rules and minimum times for connections between stops that are close to each other.
+
+-   **`from_stop_id`**: The origin stop ID.
+-   **`to_stop_id`**: The destination stop ID.
+-   **`transfer_type`**:
+    -   `0`: Recommended transfer point.
+    -   `2`: Transfer requires a minimum amount of calculated time.
+-   **`min_transfer_time`**: The minimum time (in seconds) required to walk or move between the two stops to successfully make a transfer.
+
+------------------------------------------------------------------------
+
+13. `trips` Represents an individual scheduled journey (e.g., "The 11:15 AM bus from Auckland CBD to Henderson on a weekday").
+
+-   **`route_id`**: Links to the `routes` table to identify which route this trip belongs to.
+-   **`service_id`**: Links to `calendar` or `calendar_dates` to identify which days of the week this trip runs.
+-   **`trip_id`**: A unique ID representing this specific scheduled journey.
+-   **`trip_headsign`**: The text displayed on the front of the vehicle (e.g., `"Waitakere Township To Henderson"`).
+-   **`trip_short_name`**: A short identifier for the trip (typically NA).
+-   **`direction_id`**: The direction of travel (`0` for one direction, `1` for the return direction).
+-   **`block_id`**: An identifier used to group multiple trips together served by a single physical vehicle (typically NA here).
+-   **`shape_id`**: Links to the `shapes` table to draw the path of this trip.
+-   **`wheelchair_accessible`**: Accessibility of the vehicle (`0` = no info, `1` = accessible, `2` = not accessible).
+-   **`bikes_allowed`**: Bicycle policy on this trip (`0` = no info, `1` = allowed, `2` = not allowed).
+
+
+
+
+
+
+
+
+# Tasks: 
+# Action Items from last week
+
+-   [x] Correct cbd boundary layer and rerun the code
+-   [x] Check if the inbond flow is correct (the numbers are correct); I did manaul calcualtions on excel
+-   [ ] Maybe have poportions instead?
+-   [ ] Maybe we can downalod the Auckland region SA3, north vs s vs e vs w ?
+-   [ ] Learn what a sankey diagram is, learn how to create one
+-   [ ] create a sankey diagram
+
+GTF 
+- [ ] Meta data exploration for the open street data pbf(https://osm-internal.download.geofabrik.de/australia-oceania/new-zealand.html)
+- [ ] 
+- [ ] 
+
+# Feed back
+
+-   Data viz - better
+    -   A sankey diagram can be used
+        -   can focus on the higgher income groups as well
+
+
+
+
+
