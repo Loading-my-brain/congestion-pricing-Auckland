@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hinami Nishi">
+
+<title>Travel Time calculated using r5r</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="TravelTime_files/libs/clipboard/clipboard.min.js"></script>
+<script src="TravelTime_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="TravelTime_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="TravelTime_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="TravelTime_files/libs/quarto-html/popper.min.js"></script>
+<script src="TravelTime_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="TravelTime_files/libs/quarto-html/anchor.min.js"></script>
+<link href="TravelTime_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="TravelTime_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="TravelTime_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="TravelTime_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="TravelTime_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Travel Time calculated using r5r</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hinami Nishi </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="auckland-transit-equity-commute-patterns-reflection-analysis" class="level1">
+<h1>Auckland Transit Equity &amp; Commute Patterns: Reflection &amp; Analysis</h1>
+<hr>
+<section id="results-focused-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="results-focused-interpretation">1. Results-Focused Interpretation</h2>
+<p>Our spatial routing model and statistical tests have produced highly clear, quantifiable evidence of transit inequality across Auckland.</p>
+<section id="key-results-from-the-r-output" class="level3">
+<h3 class="anchored" data-anchor-id="key-results-from-the-r-output">Key Results from the R Output</h3>
+<section id="baseline-transit-burden-descriptive-statistics" class="level4">
+<h4 class="anchored" data-anchor-id="baseline-transit-burden-descriptive-statistics">Baseline Transit Burden (Descriptive Statistics)</h4>
+<ul>
+<li><strong>Average Commute Times:</strong> Public transport commutes to the CBD are long . The median travel time is <strong>65.00 minutes</strong> (mean is <strong>63.95 minutes</strong>). This means a typical transit commuter spends over an hour traveling one-way.</li>
+<li><strong>The Ceiling check:</strong> The maximum transit travel time in our modeled network is <strong>117.00 minutes</strong> (just under 2 hours). This proves that our 120-minute maximum trip duration threshold (<code>max_trip_duration = 120</code>) successfully captured the absolute furthest commutes (like Pukekohe) without truncating any active routes [3, 4].</li>
+</ul>
+</section>
+<section id="the-statistical-split-anova-tukey-hsd" class="level4">
+<h4 class="anchored" data-anchor-id="the-statistical-split-anova-tukey-hsd">The Statistical Split (ANOVA &amp; Tukey HSD)</h4>
+<ul>
+<li><strong>The ANOVA Table:</strong> The One-Way ANOVA is highly significant (<span class="math inline">\(F(3, 490) = 20.74, p &lt; 0.001\)</span>), confirming that travel times to the CBD differ dramatically depending on a neighborhood’s average income .</li>
+<li><strong>The Tukey Pairwise Comparisons:</strong>
+<ul>
+<li><strong>Q4 (High Income) vs.&nbsp;Q1 (Low Income):</strong> Commutes from the wealthiest neighborhoods are <strong>16.69 minutes faster (one-way)</strong> than those from the poorest neighborhoods (<span class="math inline">\(p &lt; 0.001\)</span>) .</li>
+<li><strong>Q4 (High Income) vs.&nbsp;Q2 (Lower-Middle):</strong> Wealthy neighborhoods are <strong>18.15 minutes faster (one-way)</strong> (<span class="math inline">\(p &lt; 0.001\)</span>) .</li>
+<li><strong>Q4 (High Income) vs.&nbsp;Q3 (Upper-Middle):</strong> Wealthy neighborhoods are <strong>11.83 minutes faster (one-way)</strong> (<span class="math inline">\(p &lt; 0.001\)</span>) .</li>
+<li><strong>The Bottom 75%:</strong> There are no statistically significant differences in travel times when comparing the bottom three quartiles against each other (Q1, Q2, and Q3 are statistically tied, ranging from 60 to 70 minutes) .</li>
+</ul></li>
+</ul>
+</section>
+<section id="spatial-distribution-the-geographic-gaps" class="level4">
+<h4 class="anchored" data-anchor-id="spatial-distribution-the-geographic-gaps">Spatial Distribution (The Geographic Gaps)</h4>
+<ul>
+<li><strong>The North Shore (Fast/Green):</strong> Transit commutes are relatively fast (colored green) . This is driven by the dedicated, traffic-separated <strong>Northern Busway</strong> corridor bypassing peak congestion on State Highway 1 and the Harbour Bridge [1.1.3].</li>
+<li><strong>The South-East &amp; West (Slow/Red-Orange):</strong> Long travel times are clustered in the south-east (Botany Junction, Auckland Airport, Flat Bush) and the west (Whenuapai). These outer-suburban residential areas lack high-capacity, rapid transit connections [1.1.7, 1.2.7].</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="what-the-results-mean-practical-implications" class="level3">
+<h3 class="anchored" data-anchor-id="what-the-results-mean-practical-implications">What the Results Mean &amp; Practical Implications</h3>
+<ul>
+<li><strong>Auckland’s “Transit Privilege”:</strong> High-speed transit is a privilege concentrated within the wealthiest 25% of Auckland’s neighborhoods . This cohort lives in central areas or along high-quality rapid transit corridors [1, 1.2.9].</li>
+<li><strong>The Regressive “Time Tax”:</strong> Commuters in the lowest-income neighborhoods pay a heavy “time tax” of <strong>16.69 extra minutes per trip</strong> . On a standard five-day workweek, this is a <strong>2.78-hour round-trip time penalty</strong>, translating to roughly <strong>133.5 hours of extra travel time per year</strong> compared to wealthy residents .</li>
+<li><strong>The Congestion Pricing Double-Bind:</strong> Lower-income outer suburbs are locked into long transit times (80–117 minutes) [1, 4]. If Auckland introduces a CBD congestion pricing charge, these vulnerable groups face a double burden: they cannot realistically switch to public transport because it takes too long, forcing them to drive and pay the toll [4, 5].</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="hinamis-personal-experience-reflection" class="level2">
+<h2 class="anchored" data-anchor-id="hinamis-personal-experience-reflection">2. Hinami’s Personal Experience / Reflection</h2>
+<section id="dataset-confusion" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-confusion">Dataset Confusion</h3>
+<p>Early on, I got really confused with the datasets. I was treating the “SA2 Individual Part 2” census data and the “Main Means of Travel to Work” data as the same thing. It made finding and manipulating the data incredibly difficult. I eventually realized that the SA2 dataset only contains point-based origin data (where people live), whereas the Journey to Work table is a true Origin-Destination (OD) database showing bilateral flows (trips from Point A to Point B). Separating these two concepts made the workflow much easier to understand.</p>
+</section>
+<section id="the-ram-and-java-setup-headache" class="level3">
+<h3 class="anchored" data-anchor-id="the-ram-and-java-setup-headache">The RAM and Java Setup Headache</h3>
+<p>Setting up Java and <code>r5r</code> on my 8GB laptop was a major headache. I originally downloaded the entire New Zealand road network file from Geofabrik, but at 380MB, it was way too large for my computer’s RAM. Even when I allocated 4GB to Java, the car routing step would crash with an <code>OutOfMemoryError</code> because it was searching every street across the entire country.</p>
+<p>The breakthrough came when I ditched the national map and used the <code>osmextract</code> package to download a pre-cropped, 15MB Auckland-only <code>.pbf</code> map from BBBike. I also used the <code>rJavaEnv</code> package to automatically download and configure JDK 21 inside my project. After setting my Java parameters to 2GB, the network successfully compiled. Seeing R5 print <code>An object of class "r5r_network"</code> instead of <code>NULL</code> was a massive relief!</p>
+</section>
+<section id="the-na-math-bug" class="level3">
+<h3 class="anchored" data-anchor-id="the-na-math-bug">The “NA” Math Bug</h3>
+<p>Another major block occurred when I tried to calculate the total number of private vehicles:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>od_private_vehicles <span class="ot">=</span> od_drive_private <span class="sc">+</span> od_drive_company</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>My inbound car counts to the CBD kept showing up as only 789 cars, which was far too low. I realized that because the OD table has many blank or suppressed cells (stored as <code>NA</code>), adding a number to <code>NA</code> in R results in <code>NA</code>. R was silently deleting nearly 95% of my active commuter rows! Using the <code>coalesce()</code> function to treat <code>NA</code> as <code>0</code> during the addition solved the issue, and the counts jumped to their true, realistic levels.</p>
+</section>
+<section id="the-calendar-window" class="level3">
+<h3 class="anchored" data-anchor-id="the-calendar-window">The Calendar Window</h3>
+<p>I originally set my routing departure date to August 11, 2026. R5 threw an error saying no transit services were available. I looked at my GTFS calendar files and saw that Auckland Transport’s timetable data expires on July 31, 2026. I realized I had to choose a typical workday <em>inside</em> their operational window. I chose Wednesday, 13 May 2026, at 8:00 AM, which is a standard school-term weekday commute. It ran successfully without any warnings.</p>
+<hr>
+</section>
+</section>
+<section id="checklists-for-next-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="checklists-for-next-tasks">3. Checklists for Next Tasks</h2>
+<section id="short-term-model-validation-reporting" class="level3">
+<h3 class="anchored" data-anchor-id="short-term-model-validation-reporting">Short-Term: Model Validation &amp; Reporting</h3>
+<ul class="task-list">
+<li><label><input type="checkbox">Verify that <code>travel_income_HO_emp_time</code> is saved in my <code>./data/Saved/</code> folder.</label></li>
+<li><label><input type="checkbox">Extract the top 10 and bottom 10 neighborhoods for <strong>Transit Travel Times</strong> to cross-reference with my housing and income tables.</label></li>
+<li><label><input type="checkbox">Run a Pearson correlation matrix between my calculated travel times (<code>transit_time_cbd_mins</code>) and my private vehicle shares to see if speed correlates directly with car reliance.</label></li>
+<li><label><input type="checkbox">Write down the statistical and geographic results from the ANOVA and Tukey HSD tables into my draft results chapter.</label></li>
+</ul>
+</section>
+<section id="medium-term-pre-gwr-diagnostics-eda" class="level3">
+<h3 class="anchored" data-anchor-id="medium-term-pre-gwr-diagnostics-eda">Medium-Term: Pre-GWR Diagnostics (EDA)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox">Build my final GWR exploratory dataset using <code>sf::select()</code>.</label></li>
+<li><label><input type="checkbox">Run an OLS regression predicting car commute shares using low-income rates, renting rates, and transit travel times .</label></li>
+<li><label><input type="checkbox">Check the Variance Inflation Factor (VIF) of this OLS model to ensure my predictors do not suffer from multicollinearity .</label></li>
+<li><label><input type="checkbox">Map the residuals (errors) of my OLS model using <code>tmap</code> in <code>"view"</code> mode to check for spatial clustering .</label></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">4. Limitations</h2>
+<ul>
+<li><strong>TIMETABLE VS. REALITY:</strong> The transit travel times are calculated using a static GTFS schedule . They represent the official timetable, which does not account for real-world delays, bus cancellations, or unexpected traffic gridlock.</li>
+<li><strong>THE ECOLOGICAL FALLACY:</strong> Because the census data is aggregated at the SA2 level, we cannot assume that the <em>specific individuals</em> who are commuting by private car are the ones who have viable public transport alternatives . The data captures overall neighborhood trends, not individual choice sets .</li>
+<li><strong>ZERO-INFUSION LIMITATION:</strong> In GWR, public transport share has many zeros in outer Auckland because those areas have no transit. Running a local linear GWR on highly zero-skewed proportion data can occasionally predict negative transit shares, which is a known mathematical limitation of standard Gaussian GWR.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Click to toggle open
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Hinami to edit</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,208 @@
+``` yaml
+---
+title: "Mode of Transport Analysis Documentation"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+```
+
+# Exploratory Spatial Data Analysis: Commuting Modes in Auckland (2023)
+
+## 1. Data Documentation & Validation
+
+From the previous step (SA2-part2.R), I saved the validated and processed data to "travel-to-work" from the 2023 Census at the Statistical Area 2 (SA2) level for Auckland ($N = 504$ spatial units). The variables represent the proportions of commuters utilizing specific transit modes, calculated against the total stated population per neighborhood in Auckland High Urban Area.
+
+### Data Cleaning & Validation Anomalies
+
+During the initial data validation phase, I identified two critical anomalies: \* **Identity Match:** The total commuting population matches the total stated population (`transportMode_total == transportMode_total_stated`) across all neighborhoods. The proportion of commuters categorized under `not_elsewhere_included` was exactly zero across the entire study area. \* **The Missing Cohort (`did_not_go_to_work_today`):** The variable `prop_transport_did_not_go_to_work_today` yielded $504$ missing values (`NA`). This suggests that either the raw census category was unpopulated in this shapefile split or the values did not migrate successfully during the initial proportion calculation. I will flag this variable as unusable for subsequent modeling.
+
+### Definition of Aggregated Mode Share Variables
+
+To make the analysis statistically manageable, I aggregated the raw transit categories into four key travel mode proportions (I'm hoping to use PT mode share as my response variable for the GWR model):
+
+1.  **Private Car Proportions (`prop_aggregate_private_car`):** Combines commuters driving a personal vehicle (`drive_a_private_car_truck_or_van`) and those driving a company vehicle (`drive_a_company_car_truck_or_van`). Note, passngers aren't included
+2.  **Public Transport Proportions (`prop_aggregate_public_transport`):** Aggregates mass-transit modes, specifically `public_bus`, `train`, and `ferry`.
+3.  **Active Mode Proportions (`prop_aggregate_active_modes`):** Aggregates non-motorized, active transit types: walking/jogging (`walk_or_jog`) and bicycling (`bicycle`).
+4.  **Work at Home Proportions (`prop_aggregate_work_at_home`):** Represents the share of the working population avoiding a physical commute (`work_at_home`).
+
+------------------------------------------------------------------------
+
+## 2. Statistical Findings & Academic Analysis
+
+### Descriptive Statistics of Mode Shares
+
+The regional transit baseline in Auckland is heavily dominated by private vehicle dependency:
+
+-   **Private Vehicles (Drive):** Private vehicle usage is the overwhelming primary mode share. On average, the baseline private car share is $\mu = 55.5\%$ ($\text{Median} = 57.4\%$). However, when accounting for company-provided vehicles, the combined private car share reaches approximately $64.4\%$ across the region.
+-   **Working from Home (WFH):** WFH represents a major structural shift in the labor force, with a regional mean of $\mu = 17.0\%$ ($\text{Median} = 16.9\%$, $\text{Max} = 31.3\%$).
+-   **Public Transport (PT) & Active Modes:** Public transit uptake remains consistently low. Public bus usage averages only $\mu = 6.2\%$ ($\text{Median} = 5.2\%$), while rail infrastructure serves a minor fraction of commuters ($\mu = 1.9\%$, $\text{Median} = 1.3\%$). Active transit is highly localized; pedestrian commuting (walk/jog) averages $\mu = 3.9\%$ but exhibits a stark maximum of $46.9\%$ in dense urban pockets.
+
+### Statistical Modeling: Repeated Measures ANOVA
+
+To evaluate whether the differences in regional shares across the five primary travel modes (Private Car, Public Transport, Active Modes, Work at Home, and Other) are statistically meaningful, I executed a one-way Repeated Measures ANOVA, treating the SA2 neighborhoods as the subjects.
+
+The test results indicate highly statistically significant differences between the transit mode shares across Auckland:
+
+$$\text{F}(4, 1984) = 5235, \quad p < 2.2 \times 10^{-16}$$
+
+The exceptionally high $F$-statistic confirms that the variation in mode choice across neighborhoods is not random. The regional shares are structurally distinct, heavily weighted toward private vehicular transport.
+
+Note that this is different to a one-way ANOVA analysis, which I did initially but I remembered as I was doing this that this wouldn't be right....
+
+`{#_________________some revision notes___________ # Hinami's Note: I was taught to use the lm() and then use abova, however lm() assumed iid, which is not true for this case; propostions are highly dependant to each other.  # We can see in my anova(fit), the F-value is 8937.5, which is > than in the aov.  # In the one way anova:  #SSTotal=SSMode+SSResiduals #DfResiduals=N−k=3090−5=3085  # In the Repeated Measures ANOVA:  # SS Total  =SS Mode +SS Neighborhoods +SS Within-Subject Residuals # DfNeighborhoods=n−1= 618−1 =617, DfMode=k−1=5−1=4, Df Within-Subject Residuals=(n−1)×(k−1)=617×4=2468 # fit <- lm(Share ~ Mode, data=travel_props_anova_data) # summary(fit) # anova(fit)  #travel_props_anova_data %>%   group_by(usual_residence_statistical_area_2_name_na ) %>%count() # we see that here (n=617 neighbourhoods )* (k=5 mode types) = (N=3085)  #_________________some revision notes END___________}`
+
+------------------------------------------------------------------------
+
+## 3. Spatial Extremes: Top and Bottom Transit Neighborhoods
+
+To understand the geographical distribution of transport choice, I isolated the extreme ends of the public transport and private vehicle distributions.
+
+### Public Transport (PT) Extremes
+
+#### Outlier Analysis
+
+Using the Interquartile Range ($\text{IQR}$) method on the aggregated public transport share, I calculated the upper outlier threshold to be $19.9\%$. The analysis identified eight distinct outlier neighborhoods that significantly exceed regional PT norms:
+
+| Rank | Neighborhood (SA2)        | PT Proportion ($\%$) | Total Stated Commuters |
+|:----:|:--------------------------|:--------------------:|:----------------------:|
+|  1   | Symonds Street North West |       $26.3\%$       |         1,482          |
+|  2   | Ellerslie West            |       $25.0\%$       |           72           |
+|  3   | Symonds Street East       |       $24.4\%$       |         1,008          |
+|  4   | Symonds Street West       |       $24.3\%$       |         1,827          |
+|  5   | Newmarket                 |       $24.2\%$       |         1,599          |
+|  6   | Cheltenham                |       $21.6\%$       |          999           |
+|  7   | Devonport                 |       $20.7\%$       |         1,767          |
+|  8   | Anzac Avenue              |       $19.9\%$       |         2,106          |
+
+#### Top 5 and Bottom 5 Public Transport Neighborhoods
+
+##### Top 5 PT Share
+
+1.  **Symonds Street North West:** $26.3\%$
+2.  **Ellerslie West:** $25.0\%$
+3.  **Symonds Street East:** $24.4\%$
+4.  **Symonds Street West:** $24.3\%$
+5.  **Newmarket:** $24.2\%$
+
+##### Bottom 5 PT Share
+
+1.  **Middlemore:** $0.00\%$
+2.  **Papakura Industrial:** $0.00\%$
+3.  **Henderson Lincoln East:** $0.00\%$
+4.  **Tuscany Heights:** $0.65\%$
+5.  **Hingaia:** $1.95\%$
+
+**Academic Interpretation:** The extreme contrast highlights structural and socioeconomic divides. The top PT neighborhoods are located inside the high-density CBD fringe (Symonds Street university precinct) and major rail interchanges (Newmarket, Ellerslie West). Conversely, the bottom 5 represent industrial zones (Papakura Industrial) where shift-work schedules align poorly with PT timetables, or newly developed outer residential fringes (Tuscany Heights, Hingaia) characterized by a lack of rapid transit connections. Middlemore's 0% PT share among usual residents reflects a localized data anomaly or highly specific resident occupational profiles, despite the presence of a train station on the hospital's doorstep.
+
+------------------------------------------------------------------------
+
+### Private Car (PC) Extremes
+
+#### Outlier Analysis
+
+Because the regional distribution of private vehicle use is heavily skewed toward high values, the outlier identification algorithm (utilizing the traditional $1.5 \times \text{IQR}$ threshold) flags the low-value tail of the distribution. This identifies **26 highly urbanized, inner-city neighborhoods** where the private car share drops significantly below the regional average:
+
+| Rank | Neighborhood (SA2)         | PC Proportion ($\%$) | Total Stated Commuters |
+|:----:|:---------------------------|:--------------------:|:----------------------:|
+|  1   | Devonport                  |       $37.7\%$       |         1,767          |
+|  2   | Grey Lynn East             |       $37.6\%$       |         1,323          |
+|  3   | Stanley Point              |       $37.6\%$       |         1,212          |
+|  4   | Freemans Bay               |       $36.9\%$       |         2,205          |
+|  5   | Parnell West               |       $36.0\%$       |         2,742          |
+|  6   | Grafton West               |       $35.2\%$       |          990           |
+|  7   | Karangahape West           |       $34.8\%$       |          732           |
+|  8   | Newmarket                  |       $32.5\%$       |         1,599          |
+|  9   | Grafton                    |       $32.0\%$       |         1,059          |
+|  10  | The Strand                 |       $28.1\%$       |          855           |
+|  11  | College Hill               |       $28.1\%$       |          417           |
+|  12  | Wynyard-Viaduct            |       $27.6\%$       |          879           |
+|  13  | Victoria Park              |       $25.6\%$       |         2,133          |
+|  14  | Quay Street-Customs Street |       $24.5\%$       |         1,272          |
+|  15  | Karangahape East           |       $24.3\%$       |          888           |
+|  16  | Auckland-University        |       $21.4\%$       |           84           |
+|  17  | Queen Street South West    |       $21.4\%$       |         1,275          |
+|  18  | Hobson Ridge Central       |       $19.9\%$       |         1,644          |
+|  19  | Symonds Street East        |       $19.3\%$       |         1,008          |
+|  20  | Hobson Ridge South         |       $18.7\%$       |         1,029          |
+|  21  | Symonds Street West        |       $18.2\%$       |         1,827          |
+|  22  | Shortland Street           |       $17.6\%$       |         1,344          |
+|  23  | Anzac Avenue               |       $16.4\%$       |         2,106          |
+|  24  | Hobson Ridge North         |       $15.1\%$       |         1,530          |
+|  25  | Symonds Street North West  |       $14.0\%$       |         1,482          |
+|  26  | Queen Street               |       $13.5\%$       |         1,113          |
+
+#### Top 5 and Bottom 5 Private Car Neighborhoods
+
+##### Top 5 PC Share
+
+1.  **Randwick Park West:** $80.9\%$
+2.  **Drury East:** $80.3\%$
+3.  **Rowandale West:** $79.9\%$
+4.  **Papatoetoe South West:** $79.4\%$
+5.  **Clendon Park West:** $79.3\%$
+
+##### Bottom 5 PC Share
+
+1.  **Queen Street:** $13.5\%$
+2.  **Symonds Street North West:** $14.0\%$
+3.  **Hobson Ridge North:** $15.1\%$
+4.  **Anzac Avenue:** $16.4\%$
+5.  **Shortland Street:** $17.6\%$
+
+**Academic Interpretation:** The geographic polarization is stark. The highest private car dependencies ($>79\%$) are clustered in the southern, peripheral, and lower-socioeconomic areas of Auckland (Randwick Park, Drury, Rowandale, Clendon Park). These neighborhoods face a double bind: low public transit investment and long spatial distances to employment centers. Conversely, the lowest car dependencies are concentrated in the central business district (Queen Street, Hobson Ridge, Shortland Street) and inner-city university zones where parking is restricted, and active or public transit options are dense and viable.
+
+------------------------------------------------------------------------
+
+## 4. Methodological Pivot: Proportion vs. Density
+
+A major component of my spatial analysis is evaluating the difference between transit **proportions** (relative shares) and transit **densities** (absolute commuters per square kilometer). This distinction is critical for network-level planning.
+
+$$\begin{aligned} \text{Private Car:} && \text{Mean Share} = 55.5\% && \text{Mean Density} = 1,102 \text{ vehicles/km}^2 \ (\text{Max} = 5,164) \\ \text{Public Transport:} && \text{Mean Share} = 8.4\% && \text{Mean Density} = 193 \text{ people/km}^2 \ (\text{Max} = 5,117) \\ \text{Active Modes:} && \text{Mean Share} = 3.9\% && \text{Mean Density} = 184 \text{ people/km}^2 \ (\text{Max} = 10,755) \end{aligned}$$
+
+To visualize this relationship, I mapped the combined commuter densities across Auckland:
+
+![](./Data_Exploration/all_figures/map_all_modes_stacked.html)
+
+### The Spatial Paradox
+
+-   **Active Modes:** While active transit has a tiny regional mean proportion ($\mu = 3.9\%$), its density peaks at an extraordinary $10,755$ commuters/km² in dense inner-city pockets. This demonstrates that walking and cycling are highly geographically concentrated.
+-   **Private Cars:** Some low-density fringe suburbs exhibit a car proportion of over $70\%$, yet their car density is incredibly low (e.g., $<100$ cars/km²). Conversely, high-density areas near the CBD might have a low car proportion ($\sim15\%$), but because of sheer density, they still generate over $5,000$ cars/km².
+
+**Conclusion:** Modeling only the percentage share of transit modes hides the actual pressure points on Auckland's road networks. My research must evaluate both spatial metrics to avoid misrepresenting transit demand and congestion pressure.
+
+------------------------------------------------------------------------
+
+## 5. Other observations
+
+### The Zero-Transit Isolates
+
+Analyzing the summaries of public transit shares prompted me to investigate exactly where and why we observe $0\%$ participation. I generated an interactive map isolating neighborhoods with zero transit usage:
+
+![The Zero Modes Map for all of Auckland in 2023](./Data_Exploration/all_figures/zero_modes_map.html)
+
+This map reveals that the zero-transit areas are largely clustered in peripheral, semi-rural SA2s. This spatial isolation is a direct manifestation of car dependency. The complete absence of alternative travel modes leaves these populations highly vulnerable to fuel price shocks and isolates households without access to private vehicles.
+
+### The WFH Shift
+
+At $17.0\%$ of the stated workforce, WFH has surpassed the combined total of public transport and active commuting ($\sim12.3\%$). This represents a fundamental post-pandemic shift. The "commuter" is no longer just moving between physical locations, which changes how we model peak-hour congestion and the spatial economy of Auckland’s outer suburbs.
+
+## Some reflections
+
+-   Transit share vs Transit densities; num of obs/ total stated vs num of obs/ Land area.
+
+    -   Transit densities (commuters per square kilometer) are highly effective for visualizing the physical pressure on Auckland's infrastructure, I am choosing to use mode share as the dependent variables in my GWR model. WHy? Using absolute densities in a spatial regression framework introduces a confounding factor: because dense urban areas naturally feature high volumes of all commuters, a density-based model would primarily predict general population density and urban form rather than actual transit preferences. By utilizing standardized proportions, I normalize for the varying population sizes of Auckland's SA2s, isolating the actual behavioral choices of residents. This allows my GWR models to evaluate how localized socioeconomic drivers(such as income, home ownership, and education) determine the probability of a commuter choosing one mode over another, regardless of whether they reside in a low-density rural fringe or a highly populated inner-city apartment corridor.
+
+-   It was nice to be able to remember how ANOVA table works in detail and also be able to pick up how there are different kinds of ANOVA tables
+
+-   
+
+------------------------------------------------------------------------
+
+## 6. Task List: Next Steps
+
+-   [ ] **Resolve the `NA` issue with the WFH/Static variables:** Determine why `prop_transport_did_not_go_to_work_today` is entirely unpopulated and check if the original source data has this category masked.
+-   [ ] **Build Spatial Weight Matrices (**$W$): Construct neighborhood weight matrices (Queen's contiguity vs. $k$-nearest neighbors) in `sfdep` or `spdep` to prep for spatial autocorrelation tests.
+-   [ ] **Test for Global Spatial Autocorrelation:** Calculate Global Moran’s $I$ for both proportion and density variables (Private Car vs. Public Transport) to mathematically prove spatial clustering.
+-   [ ] **Map Local Indicators of Spatial Association (LISA):** Run Local Moran’s $I$ to identify statistically significant Hotspots (High-High) and Coldspots (Low-Low) of active and public transit use.
+-   [ ] **Prepare Explanatory Variables for GWR:** Extract corresponding socio-economic predictors (income brackets, home ownership, and education levels) to prepare the dataset for Geographically Weighted Regression (GWR).

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hinami Nishi">
+
+<title>Income Documentation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Income_DOC_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Income_DOC_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Income_DOC_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Income_DOC_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="Income_DOC_files/libs/quarto-html/popper.min.js"></script>
+<script src="Income_DOC_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Income_DOC_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Income_DOC_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Income_DOC_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Income_DOC_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Income_DOC_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Income_DOC_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Income Documentation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hinami Nishi </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="income-and-spatial-wealth-cluster-analysis" class="level1">
+<h1>Income and Spatial Wealth Cluster Analysis</h1>
+<section id="data-documentation-methodological-justification" class="level2">
+<h2 class="anchored" data-anchor-id="data-documentation-methodological-justification">1. Data Documentation &amp; Methodological Justification</h2>
+<p>To analyze the relationship between local economic tiers and transport choice across Auckland’s 504 neighborhoods, I processed the median personal income data (<code>total_personal_income_median_2023</code>).</p>
+<section id="the-methodological-pivot-from-arbitrary-tiles-to-mathematically-justified-quartiles" class="level3">
+<h3 class="anchored" data-anchor-id="the-methodological-pivot-from-arbitrary-tiles-to-mathematically-justified-quartiles">The Methodological Pivot: From Arbitrary Tiles to Mathematically Justified Quartiles</h3>
+<p>Defining neighborhood income cohorts requires clear statistical justification. During my analysis, I underwent a three-step methodological refinement based on academic feedback:</p>
+<ol type="1">
+<li><strong>Initial Attempt (3 Quantiles):</strong> I initially used <code>ntile</code> to split the median income values into three mathematically equal-sized groups (low, medium, high). My supervisor pointed out that this arbitrary dividing method lacked external validity and harder to align with established economic benchmarks.</li>
+<li><strong>Second Attempt (5 Quintiles):</strong> I evaluated a 5-quintile split to align with Statistics New Zealand’s standard reporting. While regionally consistent, quintiles proved overly fragmented for the statistical modeling of travel choices across our specific spatial units.</li>
+<li><strong>Final Selected Method (4 Quartiles):</strong> For peer-reviewed rigor, I mapped the data set into localized quartiles (25th, 50th, and 75th percentiles of the Auckland regional dataset). This approach is highly defensible: it usses explicit, localized dollar-value boundaries to segment neighborhoods into clear economic tiers:</li>
+</ol>
+<p><span class="math display">\[\begin{aligned}
+\text{Q1: Low Income} &amp;&amp; \le \$38,550 \\
+\text{Q2: Lower Middle} &amp;&amp; \$38,551 - \$44,600 \\
+\text{Q3: Upper Middle} &amp;&amp; \$44,601 - \$51,700 \\
+\text{Q4: High Income} &amp;&amp; &gt; \$51,700 \ \ (\text{up to } \$80,500)
+\end{aligned}\]</span></p>
+<p>By applying these exact regional thresholds, I can explicitly control for local economic variation while maintaining a mathematically sound division of the Auckland region.</p>
+<hr>
+</section>
+</section>
+<section id="statistical-findings-academic-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-findings-academic-analysis">2. Statistical Findings &amp; Academic Analysis</h2>
+<section id="statistical-modeling-one-way-anova" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-modeling-one-way-anova">Statistical Modeling: One-Way ANOVA</h3>
+<p>I executed a one-way ANOVA to test whether the proportion of aggregate private car usage (<code>prop_aggregate_private_car</code>) differs significantly across the four constructed income tiers:</p>
+<p><span class="math display">\[\text{F}(3, 493) = 25.24, \quad p = 3.32 \times 10^{-15}\]</span></p>
+<p>The exceptionally low <span class="math inline">\(p\)</span>-value confirms that the relationship between neighborhood wealth and private vehicle reliance is highly statistically significant.</p>
+</section>
+<section id="post-hoc-analysis-tukeys-honest-significant-difference-hsd" class="level3">
+<h3 class="anchored" data-anchor-id="post-hoc-analysis-tukeys-honest-significant-difference-hsd">Post-Hoc Analysis: Tukey’s Honest Significant Difference (HSD)</h3>
+<p>To identify exactly where the structural differences in car usage lie, I ran a post-hoc Tukey HSD test:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Comparison</th>
+<th style="text-align: center;">Difference in Mean Share</th>
+<th style="text-align: center;">95% Confidence Interval</th>
+<th style="text-align: center;">Adjusted <span class="math inline">\(p\)</span>-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Q2: Lower Middle vs.&nbsp;Q1: Low Income</strong></td>
+<td style="text-align: center;"><span class="math inline">\(+0.0059\)</span></td>
+<td style="text-align: center;"><span class="math inline">\([-0.0318, \ 0.0436]\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.9778\)</span> (Not Sig)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Q3: Upper Middle vs.&nbsp;Q1: Low Income</strong></td>
+<td style="text-align: center;"><span class="math inline">\(-0.0433\)</span></td>
+<td style="text-align: center;"><span class="math inline">\([-0.0810, \ -0.0056]\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0169\)</span> (Significant)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Q4: High Income vs.&nbsp;Q1: Low Income</strong></td>
+<td style="text-align: center;"><span class="math inline">\(-0.1064\)</span></td>
+<td style="text-align: center;"><span class="math inline">\([-0.1443, \ -0.0686]\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&lt; 0.0001\)</span> (Highly Sig)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Q3: Upper Middle vs.&nbsp;Q2: Lower Middle</strong></td>
+<td style="text-align: center;"><span class="math inline">\(-0.0492\)</span></td>
+<td style="text-align: center;"><span class="math inline">\([-0.0865, \ -0.0119]\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0041\)</span> (Highly Sig)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Q4: High Income vs.&nbsp;Q2: Lower Middle</strong></td>
+<td style="text-align: center;"><span class="math inline">\(-0.1123\)</span></td>
+<td style="text-align: center;"><span class="math inline">\([-0.1498, \ -0.0749]\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&lt; 0.0001\)</span> (Highly Sig)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Q4: High Income vs.&nbsp;Q3: Upper Middle</strong></td>
+<td style="text-align: center;"><span class="math inline">\(-0.0631\)</span></td>
+<td style="text-align: center;"><span class="math inline">\([-0.1006, \ -0.0257]\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0001\)</span> (Highly Sig)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Academic Interpretation:</strong> The post-hoc pairwise comparisons reveal a critical <strong>non-linear economic gradient</strong> in Auckland’s transport behavior:</p>
+<ol type="1">
+<li><strong>The Lower-Income Stagnation Zone (Q1 vs.&nbsp;Q2):</strong> There is no statistically significant difference in private car reliance between Low Income (Q1) and Lower-Middle (Q2) neighborhoods (<span class="math inline">\(p = 0.978\)</span>). The lower half of Auckland’s income distribution exhibits identical, highly elevated car dependency.</li>
+<li><strong>The Median Breakpoint:</strong> Once a neighborhood’s median income crosses the regional median (<span class="math inline">\(\$44,600\)</span>), car dependency drops significantly. Upper-Middle (Q3) neighborhoods experience a <span class="math inline">\(4.9\%\)</span> drop in car share compared to Lower-Middle ones (<span class="math inline">\(p = 0.0041\)</span>).</li>
+<li><strong>The High-Income Divergence (Q4):</strong> High-Income neighborhoods (Q4) exhibit the most dramatic reduction in car dependency, dropping by <span class="math inline">\(10.6\%\)</span> compared to Low-Income zones (<span class="math inline">\(p &lt; 0.0001\)</span>) and <span class="math inline">\(11.2\%\)</span> compared to Lower-Middle zones (<span class="math inline">\(p &lt; 0.0001\)</span>).</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="spatial-analysis-getis-ord-g_i-wealth-clusters" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-analysis-getis-ord-g_i-wealth-clusters">3. Spatial Analysis: Getis-Ord <span class="math inline">\(G_i^*\)</span> Wealth Clusters</h2>
+<p>To understand where these income tiers reside geographically, I modeled spatial clustering using the local Getis-Ord <span class="math inline">\(G_i^*\)</span> statistic. This methodology identifies statistically significant hot spots (clusters of high-income neighborhoods) and cold spots (clusters of low-income neighborhoods).</p>
+<section id="spatial-weight-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-weight-configuration">Spatial Weight Configuration</h3>
+<ul>
+<li><strong>Neighbors Definition:</strong> Queen contiguity (sharing a boundary or a vertex).</li>
+<li><strong>Self-Inclusion:</strong> Each neighborhood is explicitly included as its own neighbor (<code>include.self</code>), which is the mathematically required setup for local Getis-Ord <span class="math inline">\(G_i^*\)</span> calculations to prevent false-positive inflation.</li>
+<li><strong>Spatial Weighting Style:</strong> Binary spatial weights (<span class="math inline">\(B\)</span> style), where neighbors are coded as <span class="math inline">\(1\)</span> and non-neighbors as <span class="math inline">\(0\)</span>.</li>
+<li><strong>Z-score Classification Thresholds:</strong>
+<ul>
+<li><span class="math inline">\(Z \ge 1.96 \implies\)</span> Hot Spot (High Wealth Cluster at the 95% confidence level)</li>
+<li><span class="math inline">\(Z \le -1.96 \implies\)</span> Cold Spot (Low Wealth Cluster at the 95% confidence level)</li>
+</ul></li>
+</ul>
+<p>The interactive mapping output displays the geographic boundaries of these distinct wealth zones:</p>
+<p><embed src="./Data_Exploration/all_figures/wealth_clusters.html" class="img-fluid"></p>
+<p><img src="images/clipboard-63492839.png" class="img-fluid"></p>
+<hr>
+</section>
+</section>
+<section id="honours-research-reflections-on-transport-behavior" class="level2">
+<h2 class="anchored" data-anchor-id="honours-research-reflections-on-transport-behavior">4. Honours Research Reflections on Transport Behavior</h2>
+<p>This statistical and spatial integration exposes a fundamental paradox in Auckland’s transport equity:</p>
+<ul>
+<li><strong>Automotive Captivity in the Outer Rings:</strong> The Tukey HSD proves that the bottom <span class="math inline">\(50\%\)</span> of Auckland’s income earners (Q1 and Q2) behave identically in their high car reliance. Geographically, my Getis-Ord map shows these low-wealth cold spots clustered heavily in South and West Auckland. These populations are “automotively captive.” Despite having the lowest financial capacity to absorb vehicle running costs, they are spatially segregated to outer suburbs that lack rapid transit integration, forcing them to allocate disproportionate shares of their income to car ownership.</li>
+<li><strong>The Spatial Sorting of the Wealthy:</strong> Conversely, high-wealth hot spots (Q4) are overwhelmingly clustered in inner-city corridors, the CBD fringe, and the central-eastern waterfront. These wealthy residents have a private car share that is <span class="math inline">\(10\%\)</span> to <span class="math inline">\(11\%\)</span> lower than low-income residents.</li>
+<li><strong>The Privilege of Choice:</strong> This drop is not because wealthy individuals cannot afford cars, but because they pay an urban real estate premium to live in areas that are highly walkable and transit-dense. High-income earners are buying their way out of congestion, while low-income earners are spatially trapped in car dependency.</li>
+</ul>
+<hr>
+</section>
+<section id="task-list-next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="task-list-next-steps">5. Task List: Next Steps</h2>
+<ul class="task-list">
+<li><label><input type="checkbox"><strong>Incorporate Spatial Regression (Spatially Lagged Models):</strong> Transition the global ANOVA into a Spatial Lag or Spatial Error model to control for spatial autocorrelation among the residuals.</label></li>
+<li><label><input type="checkbox"><strong>Run Local GWR with the Income Gradient:</strong> Use the explicit quartile categories or continuous median income values as localized predictors (<span class="math inline">\(X\)</span>) in Geographically Weighted Regression (GWR) to see where the income-to-car-share relationship is strongest.</label></li>
+<li><label><input type="checkbox"><strong>Bivariate LISA of Wealth vs.&nbsp;Transit Modes:</strong> Execute a Bivariate Local Moran’s <span class="math inline">\(I\)</span> to map the spatial intersection of wealth clusters (Hot Spots) with public transport usage (Hot/Cold Spots).</label></li>
+<li><label><input type="checkbox"><strong>Quantify the Transport Cost Burden:</strong> Overlay the Q1/Q2 low-income cold spots with travel-time-to-work data to calculate the spatial mismatch and estimate the financial burden of vehicle dependency.</label></li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

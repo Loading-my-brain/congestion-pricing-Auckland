@@ -1,0 +1,111 @@
+---
+title: "Travel Time calculated using r5r"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+
+# Auckland Transit Equity & Commute Patterns: Reflection & Analysis
+
+------------------------------------------------------------------------
+
+## 1. Results-Focused Interpretation
+
+Our spatial routing model and statistical tests have produced highly clear, quantifiable evidence of transit inequality across Auckland.
+
+### Key Results from the R Output
+
+#### Baseline Transit Burden (Descriptive Statistics)
+
+-   **Average Commute Times:** Public transport commutes to the CBD are long . The median travel time is **65.00 minutes** (mean is **63.95 minutes**). This means a typical transit commuter spends over an hour traveling one-way.
+-   **The Ceiling check:** The maximum transit travel time in our modeled network is **117.00 minutes** (just under 2 hours). This proves that our 120-minute maximum trip duration threshold (`max_trip_duration = 120`) successfully captured the absolute furthest commutes (like Pukekohe) without truncating any active routes \[3, 4\].
+
+#### The Statistical Split (ANOVA & Tukey HSD)
+
+-   **The ANOVA Table:** The One-Way ANOVA is highly significant ($F(3, 490) = 20.74, p < 0.001$), confirming that travel times to the CBD differ dramatically depending on a neighborhood's average income .
+-   **The Tukey Pairwise Comparisons:**
+    -   **Q4 (High Income) vs. Q1 (Low Income):** Commutes from the wealthiest neighborhoods are **16.69 minutes faster (one-way)** than those from the poorest neighborhoods ($p < 0.001$) .
+    -   **Q4 (High Income) vs. Q2 (Lower-Middle):** Wealthy neighborhoods are **18.15 minutes faster (one-way)** ($p < 0.001$) .
+    -   **Q4 (High Income) vs. Q3 (Upper-Middle):** Wealthy neighborhoods are **11.83 minutes faster (one-way)** ($p < 0.001$) .
+    -   **The Bottom 75%:** There are no statistically significant differences in travel times when comparing the bottom three quartiles against each other (Q1, Q2, and Q3 are statistically tied, ranging from 60 to 70 minutes) .
+
+#### Spatial Distribution (The Geographic Gaps)
+
+-   **The North Shore (Fast/Green):** Transit commutes are relatively fast (colored green) . This is driven by the dedicated, traffic-separated **Northern Busway** corridor bypassing peak congestion on State Highway 1 and the Harbour Bridge \[1.1.3\].
+-   **The South-East & West (Slow/Red-Orange):** Long travel times are clustered in the south-east (Botany Junction, Auckland Airport, Flat Bush) and the west (Whenuapai). These outer-suburban residential areas lack high-capacity, rapid transit connections \[1.1.7, 1.2.7\].
+
+------------------------------------------------------------------------
+
+### What the Results Mean & Practical Implications
+
+-   **Auckland’s "Transit Privilege":** High-speed transit is a privilege concentrated within the wealthiest 25% of Auckland’s neighborhoods . This cohort lives in central areas or along high-quality rapid transit corridors \[1, 1.2.9\].
+-   **The Regressive "Time Tax":** Commuters in the lowest-income neighborhoods pay a heavy "time tax" of **16.69 extra minutes per trip** . On a standard five-day workweek, this is a **2.78-hour round-trip time penalty**, translating to roughly **133.5 hours of extra travel time per year** compared to wealthy residents .
+-   **The Congestion Pricing Double-Bind:** Lower-income outer suburbs are locked into long transit times (80–117 minutes) \[1, 4\]. If Auckland introduces a CBD congestion pricing charge, these vulnerable groups face a double burden: they cannot realistically switch to public transport because it takes too long, forcing them to drive and pay the toll \[4, 5\].
+
+------------------------------------------------------------------------
+
+## 2. Hinami’s Personal Experience / Reflection
+
+### Dataset Confusion
+
+Early on, I got really confused with the datasets. I was treating the "SA2 Individual Part 2" census data and the "Main Means of Travel to Work" data as the same thing. It made finding and manipulating the data incredibly difficult. I eventually realized that the SA2 dataset only contains point-based origin data (where people live), whereas the Journey to Work table is a true Origin-Destination (OD) database showing bilateral flows (trips from Point A to Point B). Separating these two concepts made the workflow much easier to understand.
+
+### The RAM and Java Setup Headache
+
+Setting up Java and `r5r` on my 8GB laptop was a major headache. I originally downloaded the entire New Zealand road network file from Geofabrik, but at 380MB, it was way too large for my computer's RAM. Even when I allocated 4GB to Java, the car routing step would crash with an `OutOfMemoryError` because it was searching every street across the entire country.
+
+The breakthrough came when I ditched the national map and used the `osmextract` package to download a pre-cropped, 15MB Auckland-only `.pbf` map from BBBike. I also used the `rJavaEnv` package to automatically download and configure JDK 21 inside my project. After setting my Java parameters to 2GB, the network successfully compiled. Seeing R5 print `An object of class "r5r_network"` instead of `NULL` was a massive relief!
+
+### The "NA" Math Bug
+
+Another major block occurred when I tried to calculate the total number of private vehicles:
+
+``` r
+od_private_vehicles = od_drive_private + od_drive_company
+```
+
+My inbound car counts to the CBD kept showing up as only 789 cars, which was far too low. I realized that because the OD table has many blank or suppressed cells (stored as `NA`), adding a number to `NA` in R results in `NA`. R was silently deleting nearly 95% of my active commuter rows! Using the `coalesce()` function to treat `NA` as `0` during the addition solved the issue, and the counts jumped to their true, realistic levels.
+
+### The Calendar Window
+
+I originally set my routing departure date to August 11, 2026. R5 threw an error saying no transit services were available. I looked at my GTFS calendar files and saw that Auckland Transport's timetable data expires on July 31, 2026. I realized I had to choose a typical workday *inside* their operational window. I chose Wednesday, 13 May 2026, at 8:00 AM, which is a standard school-term weekday commute. It ran successfully without any warnings.
+
+------------------------------------------------------------------------
+
+## 3. Checklists for Next Tasks
+
+### Short-Term: Model Validation & Reporting
+
+-   [ ] Verify that `travel_income_HO_emp_time` is saved in my `./data/Saved/` folder.
+-   [ ] Extract the top 10 and bottom 10 neighborhoods for **Transit Travel Times** to cross-reference with my housing and income tables.
+-   [ ] Run a Pearson correlation matrix between my calculated travel times (`transit_time_cbd_mins`) and my private vehicle shares to see if speed correlates directly with car reliance.
+-   [ ] Write down the statistical and geographic results from the ANOVA and Tukey HSD tables into my draft results chapter.
+
+### Medium-Term: Pre-GWR Diagnostics (EDA)
+
+-   [ ] Build my final GWR exploratory dataset using `sf::select()`.
+-   [ ] Run an OLS regression predicting car commute shares using low-income rates, renting rates, and transit travel times .
+-   [ ] Check the Variance Inflation Factor (VIF) of this OLS model to ensure my predictors do not suffer from multicollinearity .
+-   [ ] Map the residuals (errors) of my OLS model using `tmap` in `"view"` mode to check for spatial clustering .
+
+------------------------------------------------------------------------
+
+## 4. Limitations
+
+-   **TIMETABLE VS. REALITY:** The transit travel times are calculated using a static GTFS schedule . They represent the official timetable, which does not account for real-world delays, bus cancellations, or unexpected traffic gridlock.
+-   **THE ECOLOGICAL FALLACY:** Because the census data is aggregated at the SA2 level, we cannot assume that the *specific individuals* who are commuting by private car are the ones who have viable public transport alternatives . The data captures overall neighborhood trends, not individual choice sets .
+-   **ZERO-INFUSION LIMITATION:** In GWR, public transport share has many zeros in outer Auckland because those areas have no transit. Running a local linear GWR on highly zero-skewed proportion data can occasionally predict negative transit shares, which is a known mathematical limitation of standard Gaussian GWR.
+
+::: {.callout-note collapse="true"}
+## Click to toggle open {style="color: pink;"}
+
+Hinami to edit
+:::
+
+
+
+
+
+
+
+

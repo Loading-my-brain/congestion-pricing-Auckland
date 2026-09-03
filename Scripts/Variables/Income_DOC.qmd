@@ -1,0 +1,100 @@
+---
+title: "Income Documentation"
+author: "Hinami Nishi"
+format: html
+editor: visual
+---
+
+# Income and Spatial Wealth Cluster Analysis
+
+## 1. Data Documentation & Methodological Justification
+
+To analyze the relationship between local economic tiers and transport choice across Auckland's 504 neighborhoods, I processed the median personal income data (`total_personal_income_median_2023`).
+
+### The Methodological Pivot: From Arbitrary Tiles to Mathematically Justified Quartiles
+
+Defining neighborhood income cohorts requires clear statistical justification. During my analysis, I underwent a three-step methodological refinement based on academic feedback:
+
+1.  **Initial Attempt (3 Quantiles):** I initially used `ntile` to split the median income values into three mathematically equal-sized groups (low, medium, high). My supervisor pointed out that this arbitrary dividing method lacked external validity and harder to align with established economic benchmarks.
+2.  **Second Attempt (5 Quintiles):** I evaluated a 5-quintile split to align with Statistics New Zealand's standard reporting. While regionally consistent, quintiles proved overly fragmented for the statistical modeling of travel choices across our specific spatial units.
+3.  **Final Selected Method (4 Quartiles):** For peer-reviewed rigor, I mapped the data set into localized quartiles (25th, 50th, and 75th percentiles of the Auckland regional dataset). This approach is highly defensible: it usses explicit, localized dollar-value boundaries to segment neighborhoods into clear economic tiers:
+
+$$\begin{aligned}
+\text{Q1: Low Income} && \le \$38,550 \\
+\text{Q2: Lower Middle} && \$38,551 - \$44,600 \\
+\text{Q3: Upper Middle} && \$44,601 - \$51,700 \\
+\text{Q4: High Income} && > \$51,700 \ \ (\text{up to } \$80,500)
+\end{aligned}$$
+
+By applying these exact regional thresholds, I can explicitly control for local economic variation while maintaining a mathematically sound division of the Auckland region.
+
+------------------------------------------------------------------------
+
+## 2. Statistical Findings & Academic Analysis
+
+### Statistical Modeling: One-Way ANOVA
+
+I executed a one-way ANOVA to test whether the proportion of aggregate private car usage (`prop_aggregate_private_car`) differs significantly across the four constructed income tiers:
+
+$$\text{F}(3, 493) = 25.24, \quad p = 3.32 \times 10^{-15}$$
+
+The exceptionally low $p$-value confirms that the relationship between neighborhood wealth and private vehicle reliance is highly statistically significant.
+
+### Post-Hoc Analysis: Tukey's Honest Significant Difference (HSD)
+
+To identify exactly where the structural differences in car usage lie, I ran a post-hoc Tukey HSD test:
+
+| Comparison | Difference in Mean Share | 95% Confidence Interval | Adjusted $p$-value |
+|:---|:--:|:--:|:--:|
+| **Q2: Lower Middle vs. Q1: Low Income** | $+0.0059$ | $[-0.0318, \ 0.0436]$ | $0.9778$ (Not Sig) |
+| **Q3: Upper Middle vs. Q1: Low Income** | $-0.0433$ | $[-0.0810, \ -0.0056]$ | $0.0169$ (Significant) |
+| **Q4: High Income vs. Q1: Low Income** | $-0.1064$ | $[-0.1443, \ -0.0686]$ | $< 0.0001$ (Highly Sig) |
+| **Q3: Upper Middle vs. Q2: Lower Middle** | $-0.0492$ | $[-0.0865, \ -0.0119]$ | $0.0041$ (Highly Sig) |
+| **Q4: High Income vs. Q2: Lower Middle** | $-0.1123$ | $[-0.1498, \ -0.0749]$ | $< 0.0001$ (Highly Sig) |
+| **Q4: High Income vs. Q3: Upper Middle** | $-0.0631$ | $[-0.1006, \ -0.0257]$ | $0.0001$ (Highly Sig) |
+
+**Academic Interpretation:** The post-hoc pairwise comparisons reveal a critical **non-linear economic gradient** in Auckland's transport behavior:
+
+1.  **The Lower-Income Stagnation Zone (Q1 vs. Q2):** There is no statistically significant difference in private car reliance between Low Income (Q1) and Lower-Middle (Q2) neighborhoods ($p = 0.978$). The lower half of Auckland's income distribution exhibits identical, highly elevated car dependency.
+2.  **The Median Breakpoint:** Once a neighborhood’s median income crosses the regional median ($\$44,600$), car dependency drops significantly. Upper-Middle (Q3) neighborhoods experience a $4.9\%$ drop in car share compared to Lower-Middle ones ($p = 0.0041$).
+3.  **The High-Income Divergence (Q4):** High-Income neighborhoods (Q4) exhibit the most dramatic reduction in car dependency, dropping by $10.6\%$ compared to Low-Income zones ($p < 0.0001$) and $11.2\%$ compared to Lower-Middle zones ($p < 0.0001$).
+
+------------------------------------------------------------------------
+
+## 3. Spatial Analysis: Getis-Ord $G_i^*$ Wealth Clusters
+
+To understand where these income tiers reside geographically, I modeled spatial clustering using the local Getis-Ord $G_i^*$ statistic. This methodology identifies statistically significant hot spots (clusters of high-income neighborhoods) and cold spots (clusters of low-income neighborhoods).
+
+### Spatial Weight Configuration
+
+-   **Neighbors Definition:** Queen contiguity (sharing a boundary or a vertex).
+-   **Self-Inclusion:** Each neighborhood is explicitly included as its own neighbor (`include.self`), which is the mathematically required setup for local Getis-Ord $G_i^*$ calculations to prevent false-positive inflation.
+-   **Spatial Weighting Style:** Binary spatial weights ($B$ style), where neighbors are coded as $1$ and non-neighbors as $0$.
+-   **Z-score Classification Thresholds:**
+    -   $Z \ge 1.96 \implies$ Hot Spot (High Wealth Cluster at the 95% confidence level)
+    -   $Z \le -1.96 \implies$ Cold Spot (Low Wealth Cluster at the 95% confidence level)
+
+The interactive mapping output displays the geographic boundaries of these distinct wealth zones:
+
+![](./Data_Exploration/all_figures/wealth_clusters.html)
+
+![](images/clipboard-63492839.png)
+
+------------------------------------------------------------------------
+
+## 4. Honours Research Reflections on Transport Behavior
+
+This statistical and spatial integration exposes a fundamental paradox in Auckland’s transport equity:
+
+-   **Automotive Captivity in the Outer Rings:** The Tukey HSD proves that the bottom $50\%$ of Auckland's income earners (Q1 and Q2) behave identically in their high car reliance. Geographically, my Getis-Ord map shows these low-wealth cold spots clustered heavily in South and West Auckland. These populations are "automotively captive." Despite having the lowest financial capacity to absorb vehicle running costs, they are spatially segregated to outer suburbs that lack rapid transit integration, forcing them to allocate disproportionate shares of their income to car ownership.
+-   **The Spatial Sorting of the Wealthy:** Conversely, high-wealth hot spots (Q4) are overwhelmingly clustered in inner-city corridors, the CBD fringe, and the central-eastern waterfront. These wealthy residents have a private car share that is $10\%$ to $11\%$ lower than low-income residents.
+-   **The Privilege of Choice:** This drop is not because wealthy individuals cannot afford cars, but because they pay an urban real estate premium to live in areas that are highly walkable and transit-dense. High-income earners are buying their way out of congestion, while low-income earners are spatially trapped in car dependency.
+
+------------------------------------------------------------------------
+
+## 5. Task List: Next Steps
+
+-   [ ] **Incorporate Spatial Regression (Spatially Lagged Models):** Transition the global ANOVA into a Spatial Lag or Spatial Error model to control for spatial autocorrelation among the residuals.
+-   [ ] **Run Local GWR with the Income Gradient:** Use the explicit quartile categories or continuous median income values as localized predictors ($X$) in Geographically Weighted Regression (GWR) to see where the income-to-car-share relationship is strongest.
+-   [ ] **Bivariate LISA of Wealth vs. Transit Modes:** Execute a Bivariate Local Moran's $I$ to map the spatial intersection of wealth clusters (Hot Spots) with public transport usage (Hot/Cold Spots).
+-   [ ] **Quantify the Transport Cost Burden:** Overlay the Q1/Q2 low-income cold spots with travel-time-to-work data to calculate the spatial mismatch and estimate the financial burden of vehicle dependency.
