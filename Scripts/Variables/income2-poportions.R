@@ -13,7 +13,7 @@ colnames(travel_income_HO_emp)[str_detect(colnames(travel_income_HO_emp), "incom
 # By aggregating the census counts of 
 # residents earning $30,000 or less and dividing by the total stated population,
 # this metric directly measures the concentration of financially vulnerable residents 
-# (such as low-wage workers, students, and welfare beneficiaries) within each SA2.Additionally,
+# (such as low-wage workers) within each SA2.Additionally,
 # formatting this variable as a proportion ensures mathematical 
 # consistency with the dependent transit variables in the (GWR) model.
 
