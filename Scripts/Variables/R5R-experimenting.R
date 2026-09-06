@@ -416,16 +416,16 @@ transit_time_wed<- tm_shape(travel_income_HO_emp_time) +
 # play around with the numberws
 
 # DO GWR first ( understand )
-- Experiememt 
-- spatial lags 
-- explore a different model if it doens't wokr and then compare'
-- using package. 
-
-- sankey - sa3(comapre) - prioirty 
-- tone is to convince
-
-
-12th sept
+# - Experiememt 
+# - spatial lags 
+# - explore a different model if it doens't wokr and then compare'
+# - using package. 
+# 
+# - sankey - sa3(comapre) - prioirty 
+# - tone is to convince
+# 
+# 
+# 12th sept
 
 
 
