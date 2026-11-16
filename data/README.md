@@ -18,18 +18,24 @@ From Stats NZ Datafinder (all 2023 versions):
 - 2023 Census main means of travel to work by statistical area (the origin–destination
   table, .dbf) into `data/OD-data/`
 
-You only need these if you want to redo the travel time routing (scripts 04a and 04c):
-
-- An Auckland OpenStreetMap extract (.osm.pbf) from BBBike. Mine was downloaded on
-  10 August 2026.
-- The Auckland Transport GTFS timetable, saved as `gtfs.zip`. Mine was valid from 1 May
-  to 31 July 2026.
-
-Both go in `data/r5_clean/`.
-
 ## What's included
 
-These are travel times I calculated myself, so you can run the analysis without Java or r5r:
+The files I used for the travel time routing (scripts 04a and 04c) are in `data/r5_clean/`.
+I've included them because both sources get updated all the time, so you can't download
+the same versions again:
+
+- `gtfs.zip` is the Auckland Transport GTFS timetable I used, valid from 1 May to
+  31 July 2026. It's from Auckland Transport's open data.
+- `bbbike_Auckland.osm.pbf` is the OpenStreetMap extract of Auckland from BBBike,
+  downloaded on 10 August 2026. © OpenStreetMap contributors, available under the Open
+  Database Licence (ODbL).
+
+r5r builds its network files (`network.dat` and so on) from these the first time it runs.
+
+
+
+I've also included the travel times I calculated, so you can run the rest of the analysis
+without Java or r5r:
 
 - `pt_time_cbd_r5r_20260513_0800.csv` has the PT time from each SA2 to the city centre,
   leaving at 8 am on Wednesday 13 May 2026, with a 30-minute walking limit (from 04a).

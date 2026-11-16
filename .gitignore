@@ -23,6 +23,11 @@ data/*
 !data/pt_time_cbd_r5r_20260513_0800.csv
 !data/car_time_cbd_r5r_freeflow_inbound.csv
 !data/car_time_cbd_r5r_freeflow.csv
+# The exact timetable and road network I routed on (can't be downloaded again later)
+!data/r5_clean/
+data/r5_clean/*
+!data/r5_clean/gtfs.zip
+!data/r5_clean/bbbike_Auckland.osm.pbf
 
 # Scripts: only the clean scripts go up
 Scripts/_archive/
