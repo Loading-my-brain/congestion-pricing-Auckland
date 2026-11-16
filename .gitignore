@@ -1,24 +1,46 @@
-# R session files
-.Rproj.user
+# Files and folders that stay on my computer and are not uploaded to GitHub
+
+# R / RStudio session files
+.Rproj.user/
 .Rhistory
 .RData
 .RDataTmp*
 .Ruserdata
+# .Rprofile is machine-specific (Java path)
+.Rprofile
+*.log
 
-# Word temporary/lock files (fixes those ~$ files)
+# Word / Office lock files
 ~$*
 
-# Quarto / RMarkdown auxiliary folders
+# Quarto / RMarkdown helper folders
 *_files/
 *_cache/
 
-# Project Specific Data (Large files)
-data/census.csv
-data/census_akl.csv
-Data_Exploration/all_figures/map_all_modes_stacked.html
+# Data: only the README and my travel time CSVs go up
+data/*
+!data/README.md
+!data/pt_time_cbd_r5r_20260513_0800.csv
+!data/car_time_cbd_r5r_freeflow_inbound.csv
+!data/car_time_cbd_r5r_freeflow.csv
 
-# Ignore bin folders
+# Scripts: only the clean scripts go up
+Scripts/_archive/
+Scripts/Documentation/
+Scripts/images/
+Scripts/clean/logs/
+Scripts/clean/printouts/
+
+# Figures: no drafts or notes
+all_figures/bin/
+all_figures/Notes_Hinami_figures/
+all_figures/Figure/
+all_figures/Rplot.png
+*.pptx
+
+# Other local folders
 Bin/
-data/Bin/
 rjavaenv/
-data/r5_network/
+rosm.cache/
+Learning-notes/
+Notes_Hinami_figures/
